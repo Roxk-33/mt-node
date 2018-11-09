@@ -4,10 +4,21 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app;
-
+  const { router, controller, middleware } = app;
+  const verfiyToken = middleware.verfiyToken(null, app);
   const userRouter = app.router.namespace('/user');
-  // 用户-登录
-  router.get('/api/v1/user/login', controller.user.login);
+  // 用户
+  router.post('/api/v1/user/login', controller.user.login); //-登录
+  // router.get('/api/v1/user/signup_check/username', controller.user.login); //-
+  router.post('/api/v1/user/register', controller.user.register);
   router.post('/api/v1/user/address', controller.user.addAddress);
+
+  //店铺-列表
+  router.get('/api/v1/shop', controller.shop.getList);
+  //店铺-详情
+  router.get('/api/v1/shop/:id', controller.shop.getItem);
+
+  // 购物车
+  router.get('/api/v1/cart', verfiyToken, controller.cartList.getList);
+  router.post('/api/v1/cart', verfiyToken, controller.cartList.create);
 };

@@ -16,4 +16,5 @@ module.exports = appInfo => {
       idle: 10000,
     },
   };
+  return config;
 };

@@ -3,9 +3,17 @@
 const Controller = require('egg').Controller;
 
 class cartListController extends Controller {
+  get rules() {
+    return {
+      list: {
+        userId: { type: 'string', required: true },
+      },
+    };
+  }
   async getList() {
     const { ctx, service } = this;
-    const result = await service.cartList.getCartList();
+    const { userId } = ctx.validateParams(this.rules.list, ctx);
+    const result = await service.cartList.getCartList(userId);
     if (!!result) {
       ctx.success(result);
     } else {

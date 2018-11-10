@@ -39,8 +39,7 @@ class UserController extends Controller {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.item, ctx);
     const result = await service.user.login(data);
-    console.log(11111);
-    if (!!result) ctx.success({ token: result });
+    if (!!result) ctx.success(result);
     else {
       ctx.fail('帐号或密码不存在');
     }

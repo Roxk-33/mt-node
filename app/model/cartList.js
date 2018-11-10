@@ -25,9 +25,16 @@ module.exports = app => {
   CartList.getList = function(id) {
     return this.findAll({ where: { user_id: id } });
   };
+  CartList.deleteItem = function(id) {
+    return this.destroy({ where: { id } });
+  };
   CartList.pushItem = function(data) {
     return this.findOrCreate({
-      where: { spec_id: data.spec_id, food_id: data.food_id },
+      where: {
+        spec_id: data.spec_id,
+        food_id: data.food_id,
+        user_id: data.user_id,
+      },
       defaults: {
         shop_id: data.shop_id,
         food_id: data.food_id,

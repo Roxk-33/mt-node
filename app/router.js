@@ -19,6 +19,10 @@ module.exports = app => {
   router.get('/api/v1/shop/:id', controller.shop.getItem);
 
   // 购物车
-  router.get('/api/v1/cart', verfiyToken, controller.cartList.getList);
-  router.post('/api/v1/cart', verfiyToken, controller.cartList.create);
+  router.get(
+    '/api/v1/user/:userId/cart',
+    verfiyToken,
+    controller.cartList.getList
+  );
+  router.post('/api/v1/user/cart', verfiyToken, controller.cartList.create);
 };

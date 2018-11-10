@@ -8,13 +8,20 @@ module.exports = (opt, app) => {
       ctx.fail(401);
       return;
     }
-    const token = Authorization.split(' ')[1];
+    console.log(2222);
+    console.log(Authorization);
+    const token = Authorization.split(' ')[1] || null;
+    console.log(111);
+    console.log(token);
     if (token) {
       let result = verifyToken(token, app.config.jwt.secret);
+
       let { id } = result;
       if (id) {
         if (id) {
-          await next();
+          ctx.mt = {};
+          ctx.mt.id = id;
+          await next(id);
         } else {
           // 如果不是最新token，则代表用户在另一个机器上进行操作，需要用户重新登录保存最新token
           ctx.fail(4001);

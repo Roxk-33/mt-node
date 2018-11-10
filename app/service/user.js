@@ -13,6 +13,7 @@ class UserService extends Service {
       result = ctx.helper.bcompare(password, user.dataValues.password);
       if (result) {
         let token = app.generateToken({ id: user.id });
+        delete user.password;
         return { token, user };
       }
     }
@@ -27,11 +28,17 @@ class UserService extends Service {
       console.log('已经有这个用户');
       return false;
     }
-
     password = ctx.helper.mdPassWord(password);
     return app.model.User.createItem({ password, account, user_name, tel });
   }
-  userInfo() {}
+  async getUserInfo(id) {
+    const { app } = this;
+    const user = await app.model.User.getItemById(id);
+    if (!!user) {
+      return user;
+    }
+    return false;
+  }
   // 检查帐号，手机号是否已存在
   isExist(account) {
     return this.app.model.User.userIsExist(account);

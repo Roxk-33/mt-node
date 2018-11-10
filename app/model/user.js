@@ -28,7 +28,15 @@ module.exports = app => {
   );
 
   User.getItemByAccount = function(account) {
-    return this.findOne({ where: { account } });
+    return this.findOne({
+      where: { account },
+    });
+  };
+  User.getItemById = function(id) {
+    return this.findOne({
+      where: { id },
+      attributes: ['id', 'user_name', 'avatar', 'tel', 'account'],
+    });
   };
   User.createItem = function(data) {
     return this.create({

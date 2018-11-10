@@ -44,6 +44,14 @@ class UserController extends Controller {
       ctx.fail('帐号或密码不存在');
     }
   }
+  async getInfo() {
+    const { ctx, service } = this;
+    const result = await service.user.getUserInfo(ctx.mt.id);
+    if (!!result) ctx.success(result);
+    else {
+      ctx.fail('不存在该帐号');
+    }
+  }
   async register() {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.create, ctx);

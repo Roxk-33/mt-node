@@ -80,6 +80,7 @@ module.exports = {
   fail(code = -1, message = '', error = null) {
     const { codeMap } = this.app.config;
     const failMsg = codeMap[-1];
+    console.log(failMsg, code);
     if (this.app.isString(code)) {
       error = message || null;
       message = code;

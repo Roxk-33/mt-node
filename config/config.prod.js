@@ -16,5 +16,10 @@ module.exports = appInfo => {
       idle: 10000,
     },
   };
+  config.cluster = {
+    listen: {
+      port: 3000,
+    }
+  };
   return config;
 };

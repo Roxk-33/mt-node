@@ -13,7 +13,7 @@ module.exports = app => {
       price: FLOAT,
       area_id: FLOAT,
       description: TEXT,
-      photo: STRING, //  照片
+      picture: { type: STRING, defaultValue: 'https://via.placeholder.com/100x100' }, //  照片
       month_sale: { type: DOUBLE, allowNull: false, defaultValue: 0 },
       like: { type: FLOAT, allowNull: false, defaultValue: 0 }, //  点赞
     },
@@ -22,10 +22,10 @@ module.exports = app => {
       freezeTableName: true,
     }
   );
-  Food.associate = function() {
+  Food.associate = function () {
     Food.belongsTo(app.model.Shop, { foreignKey: 'shop_id', targetKey: 'id' });
   };
-  Food.associate = function() {
+  Food.associate = function () {
     Food.hasMany(app.model.FoodSpec, {
       foreignKey: 'food_id',
       sourceKey: 'id',

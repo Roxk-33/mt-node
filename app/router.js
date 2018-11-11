@@ -9,6 +9,7 @@ module.exports = app => {
   const userRouter = app.router.namespace('/user');
   // 用户
   router.post('/api/v1/user/login', controller.user.login); //-登录
+  router.get('/api/v1/user/logout', controller.user.logout); //-登出
   router.get('/api/v1/user', verfiyToken, controller.user.getInfo); //-获取用户信息
   // router.get('/api/v1/user/signup_check/username', controller.user.login); //-
   router.post('/api/v1/user/register', controller.user.register);

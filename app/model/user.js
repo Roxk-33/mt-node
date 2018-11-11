@@ -1,20 +1,37 @@
 'use strict';
+const uuidv1 = require('uuid/v1');
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE } = app.Sequelize;
+  const { STRING, DATE, UUID } = app.Sequelize;
 
   const User = app.model.define(
     'user',
     {
       id: {
-        type: INTEGER,
+        type: UUID,
         primaryKey: true,
-        autoIncrement: true,
         unique: true,
+        allowNull: false,
+        defaultValue: function() {
+          return uuidv1().replace(/-/g, '');
+        },
       },
-      user_name: STRING,
-      avatar: STRING,
-      tel: STRING,
+      user_name: {
+        type: STRING,
+        allowNull: true,
+        defaultValue() {
+          // 'this' 允许你访问实例的属性
+          return this.getDataValue('account');
+        },
+      },
+      avatar: {
+        type: STRING,
+        allowNull: true,
+      },
+      tel: {
+        type: STRING,
+        allowNull: true,
+      },
       account: STRING,
       password: STRING,
       last_login_ip: STRING,
@@ -40,8 +57,6 @@ module.exports = app => {
   };
   User.createItem = function(data) {
     return this.create({
-      user_name: data.user_name,
-      tel: data.tel,
       password: data.password,
       account: data.account,
     });

@@ -11,3 +11,5 @@ run/
 *.sw*
 *.un~
 fjpublish.config.js
+config/config.prod.js
+config/config.local.js

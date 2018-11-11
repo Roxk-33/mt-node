@@ -22,14 +22,19 @@ class UserService extends Service {
   }
   async register(data) {
     const { ctx, app } = this;
-    let { password, account, user_name, tel } = data;
+    let { password, account } = data;
     let isExist = await this.isExist(account);
     if (isExist) {
       console.log('已经有这个用户');
       return false;
     }
     password = ctx.helper.mdPassWord(password);
-    return app.model.User.createItem({ password, account, user_name, tel });
+    const { dataValues: user } = await app.model.User.createItem({
+      password,
+      account,
+    });
+    let token = app.generateToken({ id: user.id });
+    return { token, user };
   }
   async getUserInfo(id) {
     const { app } = this;
@@ -39,7 +44,7 @@ class UserService extends Service {
     }
     return false;
   }
-  // 检查帐号，手机号是否已存在
+  // 检查帐号，帐号是否已存在
   isExist(account) {
     return this.app.model.User.userIsExist(account);
   }

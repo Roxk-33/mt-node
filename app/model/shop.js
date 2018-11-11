@@ -6,7 +6,12 @@ module.exports = app => {
   const Shop = app.model.define(
     'shop',
     {
-      id: { type: INTEGER, primaryKey: true, autoIncrement: true, unique: true },
+      id: {
+        type: INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        unique: true,
+      },
       shop_title: STRING,
       threshold: FLOAT, //  门槛
       freight: FLOAT, //  配送费
@@ -27,7 +32,15 @@ module.exports = app => {
     }
   );
   Shop.associate = function() {
-    Shop.hasMany(app.model.Food, { foreignKey: 'shop_id', sourceKey: 'id', as: 'food_list' });
+    Shop.hasMany(app.model.Food, {
+      foreignKey: 'shop_id',
+      sourceKey: 'id',
+      as: 'food_list',
+    });
+    Shop.hasMany(app.model.CartList, {
+      foreignKey: 'shop_id',
+      sourceKey: 'id',
+    });
   };
 
   Shop.getList = function() {

@@ -13,8 +13,6 @@ class UserController extends Controller {
           min: 6,
         },
         account: { type: 'string', required: true },
-        user_name: { type: 'string', required: true },
-        tel: { type: 'string', required: false },
       },
       item: {
         password: {
@@ -44,6 +42,10 @@ class UserController extends Controller {
       ctx.fail('帐号或密码不存在');
     }
   }
+  async logout() {
+    const { ctx } = this;
+    ctx.success('登出成功');
+  }
   async getInfo() {
     const { ctx, service } = this;
     const result = await service.user.getUserInfo(ctx.mt.id);
@@ -56,7 +58,7 @@ class UserController extends Controller {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.create, ctx);
     const result = await service.user.register(data);
-    if (!!result) ctx.success('注册成功');
+    if (!!result) ctx.success(result);
     else {
       ctx.fail('帐号已存在');
     }

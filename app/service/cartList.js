@@ -7,8 +7,8 @@ class CartListService extends Service {
     return this.app.model.CartList.getList(id);
   }
   async createItem(data) {
-    data.spec_id = data.specArr.join(',');
-    data.spec_text = data.specText.join(',');
+    data.spec_id = data.specArr;
+    data.spec_text = data.specText;
     data.food_name = data.foodName;
     data.food_id = data.foodId;
     data.price = data.totalPrice;

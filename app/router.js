@@ -11,9 +11,9 @@ module.exports = app => {
   router.post('/api/v1/user/login', controller.user.login); //-登录
   router.get('/api/v1/user/logout', controller.user.logout); //-登出
   router.get('/api/v1/user', verfiyToken, controller.user.getInfo); //-获取用户信息
-  // router.get('/api/v1/user/signup_check/username', controller.user.login); //-
+  router.get('/api/v1/user/address', verfiyToken, controller.user.addressList); //-获取用户收货地址
   router.post('/api/v1/user/register', controller.user.register);
-  router.post('/api/v1/user/address', controller.user.addAddress);
+  router.post('/api/v1/user/address', verfiyToken, controller.user.addAddress);
 
   //店铺-列表
   router.get('/api/v1/shop', controller.shop.getList);
@@ -22,9 +22,20 @@ module.exports = app => {
 
   // 购物车
   router.get(
-    '/api/v1/user/:userId/cart',
+    '/api/v1/user/cart',
     verfiyToken,
     controller.cartList.getList
   );
+  router.get(
+    '/api/v1/user/cart/settle/:shopId',
+    verfiyToken,
+    controller.cartList.getListByShop
+  );
+  router.put(
+    '/api/v1/user/cart',
+    verfiyToken,
+    controller.cartList.updateItem
+  );
   router.post('/api/v1/user/cart', verfiyToken, controller.cartList.create);
+  router.post('/api/v1/order/pay', verfiyToken, controller.order.orderPay);
 };

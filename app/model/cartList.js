@@ -10,29 +10,34 @@ module.exports = app => {
       food_id: { type: INTEGER, primaryKey: true },
       user_id: { type: INTEGER, primaryKey: true },
       shop_id: { type: INTEGER, primaryKey: true },
-      spec_id: {
+      spec_arr: {
         type: STRING,
         set(val) {
-          this.setDataValue('spec_id', val.join(','));
+          if (val.length === 0) this.setDataValue('spec_arr', '');
+          else this.setDataValue('spec_arr', val.join(','));
         },
         get() {
-          let specId = this.getDataValue('spec_id');
-          if (typeof specId != 'undefined') return specId.split(',')
-          return '';
+          let specId = this.getDataValue('spec_arr');
+          if (specId && specId.length) return specId.split(',');
+          return [];
         },
       },
       food_name: STRING,
       picture: STRING,
-      num: INTEGER,
+      num: {
+        type: INTEGER,
+        defaultValue: 1,
+      },
       spec_text: {
         type: INTEGER,
         set(val) {
-          this.setDataValue('spec_text', val.join(','));
+          if (val.length === 0) this.setDataValue('spec_text', '');
+          else this.setDataValue('spec_text', val.join(','));
         },
         get() {
           let specText = this.getDataValue('spec_text');
-          if (typeof specText != 'undefined') return specText.split(',')
-          return '';
+          if (specText && specText.length) return specText.split(',');
+          return [];
         },
       },
       price: FLOAT,
@@ -42,16 +47,16 @@ module.exports = app => {
       tableName: 'cartlist',
     }
   );
-  CartList.associate = function () {
+  CartList.associate = function() {
     CartList.belongsTo(app.model.Shop, {
       foreignKey: 'shop_id',
       targetKey: 'id',
       as: 'shop_info',
     });
   };
-  CartList.getList = function (id) {
+  CartList.getList = function(search) {
     return this.findAll({
-      where: { user_id: id },
+      where: search,
       include: [
         {
           model: app.model.Shop,
@@ -60,41 +65,41 @@ module.exports = app => {
       ],
     });
   };
-  CartList.deleteItem = function (id) {
+  CartList.deleteItem = function(id) {
     return this.destroy({ where: { id } });
   };
-  CartList.pushItem = function (data) {
-    return this.findOrCreate({
-      where: {
-        spec_id: data.spec_id.join(','),
-        food_id: data.food_id,
-        user_id: data.user_id,
-      },
+  CartList.removeItem = function(id, t) {
+    return this.destroy({ where: { id } }, { transaction: t });
+  };
+  CartList.getItem = function(id) {
+    return this.findOne({ where: { id } });
+  };
+  CartList.pushItem = function(data) {
+    return this.create({
       defaults: {
         shop_id: data.shop_id,
         food_id: data.food_id,
         user_id: data.user_id,
-        spec_id: data.spec_id, // 以逗号分隔的规格id群组
-        num: data.num,
+        spec_arr: data.spec_arr, // 以逗号分隔的规格id群组
         spec_text: data.spec_text,
         price: data.price,
         food_name: data.food_name,
       },
     });
   };
-  CartList.updateNum = function (id, num) {
+  CartList.updateNum = function(id, num) {
     return this.update({ num }, { where: { id } });
   };
-  CartList.createItem = function (data) {
+  CartList.createItem = function(data) {
     return this.create({
       shop_id: data.shop_id,
-      food_id: data.food_id,
-      user_id: data.user_id,
-      spec_id: data.spec_id, // 以逗号分隔的规格id群组
+      food_id: data.foodId,
+      user_id: data.userId,
+      spec_arr: data.specArr, // 以逗号分隔的规格id群组
       num: data.num,
-      spec_text: data.spec_text,
-      price: data.price,
-      food_name: data.food_name,
+      spec_text: data.specText,
+      price: data.totalPrice,
+      food_name: data.foodName,
       picture: data.picture,
     });
   };

@@ -8,11 +8,7 @@ module.exports = (opt, app) => {
       ctx.fail(401);
       return;
     }
-    console.log(2222);
-    console.log(Authorization);
     const token = Authorization.split(' ')[1] || null;
-    console.log(111);
-    console.log(token);
     if (token) {
       let result = verifyToken(token, app.config.jwt.secret);
 
@@ -46,6 +42,6 @@ function verifyToken(token, cert) {
       res = data || {};
     } else {
     }
-  } catch (e) {}
+  } catch (e) { }
   return res;
 }

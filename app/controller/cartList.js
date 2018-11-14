@@ -6,27 +6,47 @@ class cartListController extends Controller {
   get rules() {
     return {
       list: {
-        userId: { type: 'string', required: true },
       },
+      listByShop: {
+        shopId: { type: 'string', required: true },
+      }
     };
   }
   async getList() {
     const { ctx, service } = this;
-    const { userId } = ctx.validateParams(this.rules.list, ctx);
-    const result = await service.cartList.getCartList(userId);
+    const result = await service.cartList.getCartList(ctx.mt.id);
     if (!!result) {
       ctx.success(result);
     } else {
       ctx.fail();
     }
   }
-  async updateItem() {}
+  async getListByShop() {
+    const { ctx, service } = this;
+    const { shopId } = ctx.validateParams(this.rules.listByShop, ctx);
+    const result = await service.cartList.getCartListByShop(ctx.mt.id, shopId);
+    if (!!result) {
+      ctx.success(result);
+    } else {
+      ctx.fail();
+    }
+  }
+  async updateItem() {
+    const { ctx, service } = this;
+    const data = ctx.request.body;
+    const result = await service.cartList.updateItem(data);
+    if (!!result) {
+      ctx.success();
+    } else {
+      ctx.fail();
+    }
+  }
   async create() {
     const { ctx, service } = this;
     const data = ctx.request.body;
     const result = await service.cartList.createItem(data);
     if (!!result) {
-      ctx.success();
+      ctx.success(result);
     } else {
       ctx.fail();
     }

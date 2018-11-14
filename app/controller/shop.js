@@ -41,7 +41,6 @@ class ShopController extends Controller {
   }
   async getList() {
     const { ctx, service } = this;
-    console.log(ctx.params);
 
     const { page } = ctx.validateParams(this.rules.list, ctx);
     const data = await service.shop.getShopList(page);

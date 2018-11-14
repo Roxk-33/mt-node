@@ -23,16 +23,16 @@ class UserController extends Controller {
         },
         account: { type: 'string', required: true },
       },
+      address: {
+        address: {
+          type: 'string',
+          required: true,
+        },
+        tel: { type: 'string', required: true },
+      },
     };
   }
-  async addAddress() {
-    const { ctx, service } = this;
-    const address = ctx.request.body;
-    await service.user.addAddress(address);
-    ctx.body = {
-      success: true,
-    };
-  }
+
   async login() {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.item, ctx);
@@ -61,6 +61,23 @@ class UserController extends Controller {
     if (!!result) ctx.success(result);
     else {
       ctx.fail('帐号已存在');
+    }
+  }
+  async addressList() {
+    const { ctx, service } = this;
+    const result = await service.userAddress.getAddressList(ctx.mt.id);
+    if (!!result) ctx.success(result);
+    else {
+      ctx.fail();
+    }
+  }
+  async addAddress() {
+    const { ctx, service } = this;
+    const data = ctx.validateBody(this.rules.address, ctx);
+    const result = await service.userAddress.createAddress(ctx.mt.id, data);
+    if (!!result) ctx.success('添加成功');
+    else {
+      ctx.fail();
     }
   }
 }

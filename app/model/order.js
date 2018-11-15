@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, FLOAT, TEXT } = app.Sequelize;
+  const { STRING, INTEGER, FLOAT, TEXT, BIGINT } = app.Sequelize;
 
   const orderItem = app.model.define(
     'orderItem',
     {
-      id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-      order_id: { type: STRING },
+      id: { type: BIGINT, primaryKey: true, autoIncrement: true },
+      order_id: { type: BIGINT },
       food_id: { type: INTEGER, primaryKey: true },
       user_id: { type: INTEGER, allowNull: false },
       spec_text: {
@@ -35,7 +35,11 @@ module.exports = app => {
   const orderList = app.model.define(
     'orderList',
     {
-      id: { type: INTEGER, primaryKey: true, autoIncrement: true },
+      id: {
+        type: BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       user_id: { type: INTEGER, primaryKey: true },
       shop_id: { type: INTEGER, allowNull: false },
       user_sex: { type: INTEGER, allowNull: false },

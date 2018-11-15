@@ -20,7 +20,7 @@ class OrderController extends Controller {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.pay, ctx);
     const result = await service.order.orderCreate(ctx.mt.id, data);
-    if (!!result) ctx.success('提交订单成功');
+    if (!!result) ctx.success({ id: result }, '提交订单成功');
     else {
       ctx.fail();
     }

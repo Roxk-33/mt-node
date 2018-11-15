@@ -55,14 +55,13 @@ class OrderService extends Service {
           await transaction.commit();
         }
       }
+      return orderInfo.id;
     } catch (e) {
       console.log('出错');
       console.log(e);
       await transaction.rollback();
       return false;
     }
-
-    return true;
   }
   orderList(userId, page) {
     return this.app.model.Order.getList(userId, page * 10);

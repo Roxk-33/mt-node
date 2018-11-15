@@ -7,7 +7,7 @@ module.exports = app => {
     'orderItem',
     {
       id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-      order_id: { type: STRING, },
+      order_id: { type: STRING },
       food_id: { type: INTEGER, primaryKey: true },
       user_id: { type: INTEGER, allowNull: false },
       spec_text: {
@@ -18,7 +18,7 @@ module.exports = app => {
         },
         get() {
           let specText = this.getDataValue('spec_text');
-          if (specText.length) return specText.split(',')
+          if (specText.length) return specText.split(',');
           return [];
         },
       },
@@ -54,7 +54,7 @@ module.exports = app => {
     }
   );
 
-  orderList.associate = function () {
+  orderList.associate = function() {
     orderList.hasMany(orderItem, {
       foreignKey: 'order_id',
       sourceKey: 'id',
@@ -62,20 +62,53 @@ module.exports = app => {
     });
     orderList.belongsTo(app.model.Shop, {
       foreignKey: 'shop_id',
-      targetKey: 'id'
+      targetKey: 'id',
+      as: 'shop_info',
     });
   };
-  orderItem.associate = function () {
+  orderItem.associate = function() {
     orderItem.belongsTo(orderList, {
       foreignKey: 'order_id',
-      targetKey: 'id'
+      targetKey: 'id',
     });
   };
-  orderList.createOrder = function (data, t) {
+  orderList.createOrder = function(data, t) {
     return this.create(data, { transaction: t });
-  }
-  orderList.createOrderFood = function (data, t) {
+  };
+  orderList.getList = function(user_id, offset) {
+    return this.findAll({
+      where: { user_id },
+      offset,
+      limit: 10,
+      include: [
+        {
+          model: app.model.Shop,
+          as: 'shop_info',
+        },
+        {
+          model: orderItem,
+          as: 'food_list',
+        },
+      ],
+    });
+  };
+  orderList.createOrderFood = function(data, t) {
     return orderItem.create(data, { transaction: t });
-  }
+  };
+  orderList.getDetail = function(id) {
+    return this.findOne({
+      where: { id },
+      include: [
+        {
+          model: app.model.Shop,
+          as: 'shop_info',
+        },
+        {
+          model: orderItem,
+          as: 'food_list',
+        },
+      ],
+    });
+  };
   return orderList;
 };

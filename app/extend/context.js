@@ -13,8 +13,13 @@ module.exports = {
     return result;
   },
   validateParams(rules) {
+    console.log(this.params);
     this.validate(rules, this.params);
     return this.params;
+  },
+  validateQuery(rules) {
+    this.validate(rules, this.query);
+    return this.query;
   },
   validateBody(rules) {
     this.validate(rules, this.request.body);

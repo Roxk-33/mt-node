@@ -12,7 +12,7 @@ module.exports = app => {
         primaryKey: true,
         unique: true,
         allowNull: false,
-        autoIncrement: true
+        autoIncrement: true,
       },
       address: {
         type: STRING,
@@ -50,19 +50,27 @@ module.exports = app => {
     },
     {
       timestamps: false,
-      tableName: 'user_Address',
+      tableName: 'user_address',
     }
   );
 
-  userAddress.getList = function (id) {
-
+  userAddress.getList = function(id) {
     return this.findAll({
       where: { user_id: id },
-      attributes: ['id', 'user_name', 'address', 'tel', 'is_default', 'user_name', 'user_sex', 'tag'],
+      attributes: [
+        'id',
+        'user_name',
+        'address',
+        'tel',
+        'is_default',
+        'user_name',
+        'user_sex',
+        'tag',
+      ],
     });
   };
 
-  userAddress.createItem = function (data) {
+  userAddress.createItem = function(data) {
     return this.create({
       address: data.address,
       tel: data.tel,
@@ -72,17 +80,23 @@ module.exports = app => {
       tag: data.tag,
     });
   };
-  userAddress.updateItem = function (id, data) {
-    return this.update({ where: { id } }, {
-      address: data.address,
-      tel: data.tel,
-      user_name: data.user_name,
-      user_sex: data.user_sex,
-      tag: data.tag,
-    });
+  userAddress.updateItem = function(id, data) {
+    return this.update(
+      {
+        address: data.address,
+        tel: data.tel,
+        user_name: data.user_name,
+        user_sex: data.user_sex,
+        tag: data.tag,
+      },
+      { where: { id } }
+    );
   };
-  userAddress.deleteItem = function (id) {
+  userAddress.deleteItem = function(id) {
     return this.destroy({ where: { id } });
+  };
+  userAddress.getItem = function(id) {
+    return this.findOne({ where: { id } });
   };
 
   return userAddress;

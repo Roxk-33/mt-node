@@ -14,6 +14,9 @@ class OrderController extends Controller {
       detail: {
         id: { type: 'string', required: true },
       },
+      cancel: {
+        id: { type: 'string', required: true },
+      },
     };
   }
   async orderCreate() {
@@ -38,6 +41,15 @@ class OrderController extends Controller {
     const { ctx, service } = this;
     const { id } = ctx.validateParams(this.rules.detail, ctx);
     const result = await service.order.orderDetail(id);
+    if (!!result) ctx.success(result);
+    else {
+      ctx.fail();
+    }
+  }
+  async cancel() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.cancel, ctx);
+    const result = await service.order.cancelOrder(id);
     if (!!result) ctx.success(result);
     else {
       ctx.fail();

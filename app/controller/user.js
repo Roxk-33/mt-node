@@ -30,6 +30,18 @@ class UserController extends Controller {
         },
         tel: { type: 'string', required: true },
       },
+      delete: {
+        id: {
+          type: 'string',
+          required: true,
+        },
+      },
+      addressItem: {
+        id: {
+          type: 'string',
+          required: true,
+        },
+      },
     };
   }
 
@@ -71,11 +83,38 @@ class UserController extends Controller {
       ctx.fail();
     }
   }
+  async address() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.addressItem, ctx);
+    const result = await service.userAddress.getAddressInfo(id);
+    if (!!result) ctx.success(result);
+    else {
+      ctx.fail();
+    }
+  }
   async addAddress() {
     const { ctx, service } = this;
     const data = ctx.validateBody(this.rules.address, ctx);
     const result = await service.userAddress.createAddress(ctx.mt.id, data);
     if (!!result) ctx.success('添加成功');
+    else {
+      ctx.fail();
+    }
+  }
+  async editAddress() {
+    const { ctx, service } = this;
+    const data = ctx.validateBody(this.rules.address, ctx);
+    const result = await service.userAddress.updataAddress(data);
+    if (!!result) ctx.success('修改成功');
+    else {
+      ctx.fail();
+    }
+  }
+  async delAddress() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.delete, ctx);
+    const result = await service.userAddress.delAddress(id);
+    if (!!result) ctx.success('删除成功');
     else {
       ctx.fail();
     }

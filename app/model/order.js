@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, FLOAT, TEXT, BIGINT } = app.Sequelize;
+  const { STRING, INTEGER, FLOAT, TEXT, BIGINT, DATE } = app.Sequelize;
 
   const orderItem = app.model.define(
     'orderItem',
@@ -48,8 +48,11 @@ module.exports = app => {
       total_price: FLOAT,
       tel: STRING,
       user_name: STRING,
+      arrival_time: STRING,
       // 订单状态
-      // 0：未支付；1：已支付；2：送达中；3：已送达；4：退款中
+      // 0: '等待支付',1: '已支付',2: '送达中',
+      // 3: '已送达',4: '订单已完成',5: '退款中',
+      // 6: '订单已取消',
       status: { type: INTEGER, defaultValue: 0 },
       freight: FLOAT,
     },
@@ -78,6 +81,9 @@ module.exports = app => {
   };
   orderList.createOrder = function(data, t) {
     return this.create(data, { transaction: t });
+  };
+  orderList.chagneOrderStatus = function(status, id) {
+    return this.update({ status }, { where: { id } });
   };
   orderList.getList = function(user_id, offset) {
     return this.findAll({

@@ -6,7 +6,7 @@ class OrderService extends Service {
   async orderCreate(userId, data) {
     const { ctx, service } = this;
     // 获取购物车信息
-    const { shopId, address, remarks, cartIdArr } = data;
+    const { shopId, address, remarks, cartIdArr, arrivalTime } = data;
     const cartList = await service.cartList.getCartListByShop(userId, shopId);
     const shopInfo = cartList[0].shop_info;
     const totalPrice = cartList.reduce(
@@ -29,6 +29,7 @@ class OrderService extends Service {
           tel: address.tel,
           user_name: address.user_name,
           user_sex: address.user_sex,
+          arrival_time: arrivalTime,
         },
         transaction
       );
@@ -68,6 +69,9 @@ class OrderService extends Service {
   }
   orderDetail(id) {
     return this.app.model.Order.getDetail(id);
+  }
+  cancelOrder(id) {
+    return this.app.model.Order.chagneOrderStatus(6, id);
   }
 }
 

@@ -24,6 +24,12 @@ class UserController extends Controller {
         account: { type: 'string', required: true },
       },
 
+      updateUser: {
+        action: {
+          type: 'string',
+          required: true,
+        },
+      },
       address: {
         address: {
           type: 'string',
@@ -65,6 +71,16 @@ class UserController extends Controller {
     if (!!result) ctx.success(result);
     else {
       ctx.fail('不存在该帐号');
+    }
+  }
+  async updateInfo() {
+    const { ctx, service } = this;
+    const { action, data } = ctx.validateBody(this.rules.updateUser, ctx);
+
+    const result = await service.user.updateUserInfo(ctx.mt.id, action, data);
+    if (!!result) ctx.success('修改成功');
+    else {
+      ctx.fail('修改失败');
     }
   }
   async register() {

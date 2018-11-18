@@ -11,6 +11,7 @@ module.exports = app => {
   router.post('/v1/user/login', controller.user.login); //-登录
   router.get('/v1/user/logout', controller.user.logout); //-登出
   router.get('/v1/user', verfiyToken, controller.user.getInfo); //-获取用户信息
+  router.put('/v1/user', verfiyToken, controller.user.updateInfo); //-更新用户信息
   router.get('/v1/user/address', verfiyToken, controller.user.addressList); //-获取用户收货地址
   router.get('/v1/user/address/:id', verfiyToken, controller.user.address); //-获取用户收货地址详情
   router.post('/v1/user/register', controller.user.register);

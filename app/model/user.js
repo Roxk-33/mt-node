@@ -19,10 +19,6 @@ module.exports = app => {
       user_name: {
         type: STRING,
         allowNull: true,
-        defaultValue() {
-          // 'this' 允许你访问实例的属性
-          return this.getDataValue('account');
-        },
       },
       avatar: {
         type: STRING,
@@ -59,7 +55,11 @@ module.exports = app => {
     return this.create({
       password: data.password,
       account: data.account,
+      user_name: data.account,
     });
+  };
+  User.updateItem = function(sql, id) {
+    return this.update(sql, { where: { id } });
   };
   User.userIsExist = function(account) {
     return this.findOne({ where: { account } });

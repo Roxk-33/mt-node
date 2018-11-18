@@ -44,6 +44,21 @@ class UserService extends Service {
     }
     return false;
   }
+  updateUserInfo(id, action, data) {
+    const { app, ctx } = this;
+    let sql = null;
+    if (action === 'changeName') {
+      sql = { user_name: data };
+    }
+    if (action === 'changeTel') {
+      sql = { tel: data };
+    }
+    if (action === 'changePsw') {
+      data = ctx.helper.mdPassWord(data);
+      sql = { password: data };
+    }
+    return app.model.User.updateItem(sql, id);
+  }
   // 检查帐号，帐号是否已存在
   isExist(account) {
     return this.app.model.User.userIsExist(account);

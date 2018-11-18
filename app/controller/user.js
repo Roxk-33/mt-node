@@ -23,6 +23,7 @@ class UserController extends Controller {
         },
         account: { type: 'string', required: true },
       },
+
       address: {
         address: {
           type: 'string',

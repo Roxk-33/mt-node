@@ -65,12 +65,14 @@ module.exports = app => {
       ],
     });
   };
-  CartList.deleteItem = function(id) {
-    return this.destroy({ where: { id } });
+  CartList.deleteItem = function(id, t = null) {
+    if (!!t) {
+      return this.destroy({ where: { id }, transaction: t });
+    } else {
+      return this.destroy({ where: { id } });
+    }
   };
-  CartList.removeItem = function(id, t) {
-    return this.destroy({ where: { id } }, { transaction: t });
-  };
+
   CartList.getItem = function(id) {
     return this.findOne({ where: { id } });
   };

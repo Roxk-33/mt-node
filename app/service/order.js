@@ -4,11 +4,12 @@ const Service = require('egg').Service;
 
 class OrderService extends Service {
   async orderCreate(userId, data) {
-    const { ctx, service } = this;
+    const { service } = this;
     // 获取购物车信息
     const { shopId, address, remarks, cartIdArr, arrivalTime } = data;
     const cartList = await service.cartList.getCartListByShop(userId, shopId);
     const shopInfo = cartList[0].shop_info;
+
     const totalPrice = cartList.reduce(
       (previous, current) => (previous += current.num * current.price),
       shopInfo.freight
@@ -38,6 +39,12 @@ class OrderService extends Service {
         const foodInfo = cartList[index];
         // 不在所选商品中
         if (cartIdArr.length && cartIdArr.indexOf(foodInfo.id) === -1) continue;
+
+        const result = await service.shop.detectStock(foodInfo);
+        // 无库存
+        if (!result.status) {
+          throw foodInfo;
+        }
         await this.app.model.Order.createOrderFood(
           {
             user_id: userId,
@@ -52,16 +59,41 @@ class OrderService extends Service {
           transaction
         );
         await this.app.model.CartList.deleteItem(foodInfo.id, transaction);
+        // 规格类产品库存放在规格表
+        if (foodInfo.spec_arr.length) {
+          for (let index = 0; index < foodInfo.spec_arr.length; index++) {
+            const specId = foodInfo.spec_arr[index];
+            await this.app.model.FoodSpec.updateStock(
+              specId,
+              result.stock[index],
+              transaction
+            );
+          }
+        } else {
+          await this.app.model.Food.updateStock(
+            foodInfo.food_id,
+            result.stock,
+            transaction
+          );
+        }
         if (index === len - 1) {
           await transaction.commit();
         }
       }
-      return orderInfo.id;
+      return { status: true, data: orderInfo.id };
     } catch (e) {
       console.log('出错');
       console.log(e);
       await transaction.rollback();
-      return false;
+      let result = { status: false, msg: '系统出错' };
+      if (!!e.food_name) {
+        if (e.spec_arr.length) {
+          result.msg = `${e.food_name}(${e.spec_text})库存不足`;
+        } else {
+          result.msg = `${e.food_name}库存不足`;
+        }
+      }
+      return result;
     }
   }
   orderList(userId, page) {

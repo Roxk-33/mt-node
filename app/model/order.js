@@ -90,6 +90,10 @@ module.exports = app => {
       where: { user_id },
       offset,
       limit: 10,
+      order: [
+        // 将转义标题，并根据有效的方向参数列表验证DESC
+        ['created_at', 'DESC'],
+      ],
       include: [
         {
           model: app.model.Shop,

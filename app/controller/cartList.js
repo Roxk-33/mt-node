@@ -5,11 +5,10 @@ const Controller = require('egg').Controller;
 class cartListController extends Controller {
   get rules() {
     return {
-      list: {
-      },
+      list: {},
       listByShop: {
         shopId: { type: 'string', required: true },
-      }
+      },
     };
   }
   async getList() {
@@ -33,8 +32,8 @@ class cartListController extends Controller {
   }
   async updateItem() {
     const { ctx, service } = this;
-    const data = ctx.request.body;
-    const result = await service.cartList.updateItem(data);
+    const { id, type } = ctx.request.body;
+    const result = await service.cartList.updateItem(id, type);
     if (!!result) {
       ctx.success();
     } else {

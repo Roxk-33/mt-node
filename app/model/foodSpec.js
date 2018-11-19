@@ -27,6 +27,12 @@ module.exports = app => {
       targetKey: 'id',
     });
   };
-
+  FoodSpec.updateStock = function(id, stock, t) {
+    return this.update(
+      { stock: stock },
+      { where: { id: id } },
+      { transaction: t }
+    );
+  };
   return FoodSpec;
 };

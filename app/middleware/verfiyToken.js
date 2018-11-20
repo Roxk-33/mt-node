@@ -14,7 +14,8 @@ module.exports = (opt, app) => {
 
       let { id } = result;
       if (id) {
-        if (id) {
+        let redis_token = await app.redis.get(id);
+        if (redis_token === token) {
           ctx.mt = {};
           ctx.mt.id = id;
           await next(id);
@@ -42,6 +43,6 @@ function verifyToken(token, cert) {
       res = data || {};
     } else {
     }
-  } catch (e) { }
+  } catch (e) {}
   return res;
 }

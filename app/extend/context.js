@@ -84,20 +84,20 @@ module.exports = {
   },
   fail(code = -1, message = '', error = null) {
     const { codeMap } = this.app.config;
-    const failMsg = codeMap[-1];
-    console.log(failMsg, code);
+    const failMsg = codeMap[code];
     if (this.app.isString(code)) {
       error = message || null;
       message = code;
       code = -1;
     }
+
     const body = {
-      code,
+      status_code: code,
       status: false,
       message: message || codeMap[code] || failMsg,
     };
+    console.log(body);
     if (error) body.error = error;
-    this.status = code === -1 ? 200 : code;
     this.body = body;
   },
 };

@@ -49,14 +49,21 @@ module.exports = app => {
       tel: STRING,
       user_name: STRING,
       arrival_time: STRING,
+      deadline_pay_time: DATE,
       // 订单状态
-      // 0: '等待支付',1: '已支付',2: '送达中',
-      // 3: '已送达',4: '订单已完成',5: '退款中',
-      // 6: '订单已取消',
-      status: { type: INTEGER, defaultValue: 0 },
+      // UNPAY: '等待支付',
+      // PAY: '已支付',
+      // ONTHEWAY: '送达中',
+      // ACCEPT: '已送达',
+      // ORDER_SUCCESS: '订单已完成',
+      // ORDER_REFUND: '退款中',
+      // ORDER_CANCEL: '订单已取消',
+      // ORDER_CANCEL_TIMEOUT: '订单已取消',
+      status: { type: STRING, defaultValue: 'UNPAY' },
       freight: FLOAT,
     },
     {
+      timezone: '+08:00', //东八时区
       tableName: 'order_list',
     }
   );

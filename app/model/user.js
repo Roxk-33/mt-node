@@ -36,6 +36,7 @@ module.exports = app => {
       updated_at: DATE,
     },
     {
+      timezone: '+08:00', //东八时区
       tableName: 'user',
     }
   );

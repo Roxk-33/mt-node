@@ -51,5 +51,5 @@ module.exports = app => {
 
   router.get('/v1/user/order', verfiyToken, controller.order.list);
   router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
-  router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
+  router.put('/v1/user/order/', verfiyToken, controller.order.cancel);
 };

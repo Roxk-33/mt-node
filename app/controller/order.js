@@ -15,7 +15,8 @@ class OrderController extends Controller {
         id: { type: 'string', required: true },
       },
       cancel: {
-        id: { type: 'string', required: true },
+        id: { type: 'number', required: true },
+        action: { type: 'string', required: true },
       },
     };
   }
@@ -48,8 +49,8 @@ class OrderController extends Controller {
   }
   async cancel() {
     const { ctx, service } = this;
-    const { id } = ctx.validateParams(this.rules.cancel, ctx);
-    const result = await service.order.cancelOrder(id);
+    const { id,action } = ctx.validateBody(this.rules.cancel, ctx);
+    const result = await service.order.cancelOrder(id,action);
     if (!!result) ctx.success(result);
     else {
       ctx.fail();

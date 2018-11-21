@@ -18,7 +18,9 @@ class OrderService extends Service {
     let transaction;
     try {
       transaction = await this.ctx.model.transaction();
+      const dead_line_time = new Date();
 
+      dead_line_time.setSeconds(dead_line_time.getSeconds() + this.app.config.pay.deadline);
       const { dataValues: orderInfo } = await this.app.model.Order.createOrder(
         {
           user_id: userId,
@@ -31,6 +33,7 @@ class OrderService extends Service {
           user_name: address.user_name,
           user_sex: address.user_sex,
           arrival_time: arrivalTime,
+          deadline_pay_time: dead_line_time,
         },
         transaction
       );
@@ -102,8 +105,10 @@ class OrderService extends Service {
   orderDetail(id) {
     return this.app.model.Order.getDetail(id);
   }
-  cancelOrder(id) {
-    return this.app.model.Order.chagneOrderStatus(6, id);
+  cancelOrder(id,action) {
+    let orderStatus = 'ORDER_CANCEL';
+    if(action === 'timeout') orderStatus +="_TIMEOUT";
+    return this.app.model.Order.chagneOrderStatus(orderStatus, id);
   }
 }
 

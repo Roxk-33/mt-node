@@ -42,8 +42,7 @@ module.exports = appInfo => {
   config.slat = 2;
 
   config.pay = {
-    // deadline: 30 * 60   // 支付时间
-    deadline: 10   // 支付时间
+    deadline: 30 * 60   // 支付时间
   }
   return config;
 };

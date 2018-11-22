@@ -31,7 +31,7 @@
     "node": ">=8.9.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-mt-node",
+    "start": "egg-scripts stop --title=egg-server-mt-node && egg-scripts start --daemon --title=egg-server-mt-node",
     "stop": "egg-scripts stop --title=egg-server-mt-node",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",

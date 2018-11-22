@@ -20,7 +20,9 @@ class OrderService extends Service {
       transaction = await this.ctx.model.transaction();
       const dead_line_time = new Date();
 
-      dead_line_time.setSeconds(dead_line_time.getSeconds() + this.app.config.pay.deadline);
+      dead_line_time.setSeconds(
+        dead_line_time.getSeconds() + this.app.config.pay.deadline
+      );
       const { dataValues: orderInfo } = await this.app.model.Order.createOrder(
         {
           user_id: userId,
@@ -39,33 +41,37 @@ class OrderService extends Service {
       );
       const len = cartList.length;
       for (let index = 0; index < len; index++) {
-        const foodInfo = cartList[index];
+        const cartFoodInfo = cartList[index];
         // 不在所选商品中
-        if (cartIdArr.length && cartIdArr.indexOf(foodInfo.id) === -1) continue;
+        if (cartIdArr.length && cartIdArr.indexOf(cartFoodInfo.id) === -1)
+          continue;
 
-        const result = await service.shop.detectStock(foodInfo);
+        const result = await service.shop.detectStock(cartFoodInfo);
         // 无库存
         if (!result.status) {
-          throw foodInfo;
+          throw cartFoodInfo;
         }
         await this.app.model.Order.createOrderFood(
           {
             user_id: userId,
             order_id: orderInfo.id,
-            food_id: foodInfo.food_id,
-            spec_text: foodInfo.spec_text,
-            price: foodInfo.price,
-            num: foodInfo.num,
-            food_picture: foodInfo.picture,
-            food_name: foodInfo.food_name,
+            food_id: cartFoodInfo.food_id,
+            spec_text: cartFoodInfo.spec_text,
+            price: cartFoodInfo.price,
+            num: cartFoodInfo.num,
+            food_picture: cartFoodInfo.picture,
+            food_name: cartFoodInfo.food_name,
           },
           transaction
         );
-        await this.app.model.CartList.deleteItem(foodInfo.id, transaction);
+        await this.app.model.CartList.deleteItem(
+          { id: cartFoodInfo.id },
+          transaction
+        );
         // 规格类产品库存放在规格表
-        if (foodInfo.spec_arr.length) {
-          for (let index = 0; index < foodInfo.spec_arr.length; index++) {
-            const specId = foodInfo.spec_arr[index];
+        if (cartFoodInfo.spec_arr.length) {
+          for (let index = 0; index < cartFoodInfo.spec_arr.length; index++) {
+            const specId = cartFoodInfo.spec_arr[index];
             await this.app.model.FoodSpec.updateStock(
               specId,
               result.stock[index],
@@ -74,7 +80,7 @@ class OrderService extends Service {
           }
         } else {
           await this.app.model.Food.updateStock(
-            foodInfo.food_id,
+            cartFoodInfo.food_id,
             result.stock,
             transaction
           );
@@ -105,9 +111,9 @@ class OrderService extends Service {
   orderDetail(id) {
     return this.app.model.Order.getDetail(id);
   }
-  cancelOrder(id,action) {
+  cancelOrder(id, action) {
     let orderStatus = 'ORDER_CANCEL';
-    if(action === 'timeout') orderStatus +="_TIMEOUT";
+    if (action === 'timeout') orderStatus += '_TIMEOUT';
     return this.app.model.Order.chagneOrderStatus(orderStatus, id);
   }
 }

@@ -36,6 +36,12 @@ module.exports = app => {
 
   // 新增商品到购物车
   router.post('/v1/user/cart', verfiyToken, controller.cartList.create);
+  // 清空某商店的购物车
+  router.delete(
+    '/v1/user/cart/:shopId',
+    verfiyToken,
+    controller.cartList.empty
+  );
 
   // 去结算-入口为商店内，结算商品是该商店购物车全部商品
   // 去结算-入口为购物车，结算商品是该商店购物车部分（也有可能是全部）商品

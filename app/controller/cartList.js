@@ -9,6 +9,9 @@ class cartListController extends Controller {
       listByShop: {
         shopId: { type: 'string', required: true },
       },
+      empty: {
+        shopId: { type: 'string', required: true },
+      },
     };
   }
   async getList() {
@@ -44,6 +47,16 @@ class cartListController extends Controller {
     const { ctx, service } = this;
     const data = ctx.request.body;
     const result = await service.cartList.createItem(data);
+    if (!!result) {
+      ctx.success(result);
+    } else {
+      ctx.fail();
+    }
+  }
+  async empty() {
+    const { ctx, service } = this;
+    const { shopId } = ctx.validateParams(this.rules.empty, ctx);
+    const result = await service.cartList.deleteItem(shopId);
     if (!!result) {
       ctx.success(result);
     } else {

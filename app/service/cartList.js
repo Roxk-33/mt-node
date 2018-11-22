@@ -19,13 +19,17 @@ class CartListService extends Service {
     }
     // 判断该商品数量是否为1，若为1则直接删除
     if (foodInfo.num === 1) {
-      return this.app.model.CartList.deleteItem(foodInfo.id);
+      return this.app.model.CartList.deleteItem({ id: foodInfo.id });
     } else {
       return this.app.model.CartList.updateNum(foodInfo.id, --foodInfo.num);
     }
   }
   async createItem(data) {
     const result = await this.app.model.CartList.createItem(data);
+    return result;
+  }
+  async deleteItem(data) {
+    const result = await this.app.model.CartList.deleteItem({ shop_id: data });
     return result;
   }
 }

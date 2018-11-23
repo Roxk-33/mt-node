@@ -54,8 +54,9 @@ module.exports = app => {
 
   // 创建订单
   router.post('/v1/order', verfiyToken, controller.order.orderCreate);
+  router.put('/v1/order', verfiyToken, controller.order.orderPay);
 
   router.get('/v1/user/order', verfiyToken, controller.order.list);
   router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
-  router.put('/v1/user/order/', verfiyToken, controller.order.cancel);
+  router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
 };

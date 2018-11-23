@@ -4,9 +4,16 @@ const Service = require('egg').Service;
 
 class OrderService extends Service {
   async orderCreate(userId, data) {
-    const { service } = this;
+    const { service, app } = this;
     // 获取购物车信息
-    const { shopId, address, remarks, cartIdArr, arrivalTime } = data;
+    const {
+      shopId,
+      address,
+      remarks,
+      cartIdArr,
+      arrivalTime,
+      tableware,
+    } = data;
     const cartList = await service.cartList.getCartListByShop(userId, shopId);
     const shopInfo = cartList[0].shop_info;
 
@@ -36,6 +43,7 @@ class OrderService extends Service {
           user_sex: address.user_sex,
           arrival_time: arrivalTime,
           deadline_pay_time: dead_line_time,
+          tableware_num: tableware,
         },
         transaction
       );
@@ -89,7 +97,8 @@ class OrderService extends Service {
           await transaction.commit();
         }
       }
-      return { status: true, data: orderInfo.id };
+      this.setSchedules(orderInfo.id, dead_line_time);
+      return { status: true, data: orderInfo };
     } catch (e) {
       console.log('出错');
       console.log(e);
@@ -108,13 +117,24 @@ class OrderService extends Service {
   orderList(userId, page) {
     return this.app.model.Order.getList(userId, page * 10);
   }
-  orderDetail(id) {
+  async orderDetail(id) {
+    let i = await this.app.redis.get('user').get('ss');
+    console.log(i);
     return this.app.model.Order.getDetail(id);
   }
-  cancelOrder(id, action) {
-    let orderStatus = 'ORDER_CANCEL';
-    if (action === 'timeout') orderStatus += '_TIMEOUT';
+  orderPay(id) {
+    const orderStatus = 'PAY';
     return this.app.model.Order.chagneOrderStatus(orderStatus, id);
+  }
+  cancelOrder(id) {
+    let orderStatus = 'ORDER_CANCEL';
+    return this.app.model.Order.chagneOrderStatus(orderStatus, id);
+  }
+  async setSchedules(id, timeEnd) {
+    const { app } = this;
+    await app.redis.get('order').set(id, 1);
+    const time = app.getResidualTime();
+    await app.redis.get('order').expire(id, timeEnd);
   }
 }
 

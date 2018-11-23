@@ -13,7 +13,7 @@ class UserService extends Service {
       result = ctx.helper.bcompare(password, user.dataValues.password);
       if (result) {
         let token = app.generateToken({ id: user.id });
-        await app.redis.set(user.id, token);
+        // await app.redis.set(user.id, token);
         delete user.password;
         return { token, user };
       }

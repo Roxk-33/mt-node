@@ -43,6 +43,7 @@ module.exports = app => {
       user_id: { type: INTEGER, primaryKey: true },
       shop_id: { type: INTEGER, allowNull: false },
       user_sex: { type: INTEGER, allowNull: false },
+      tableware_num: { type: INTEGER, defaultValue: 0 },
       address: { type: STRING, allowNull: false },
       remarks: { type: TEXT, allowNull: true },
       total_price: FLOAT,

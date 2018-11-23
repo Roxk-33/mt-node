@@ -117,9 +117,7 @@ class OrderService extends Service {
   orderList(userId, page) {
     return this.app.model.Order.getList(userId, page * 10);
   }
-  async orderDetail(id) {
-    let i = await this.app.redis.get('user').get('ss');
-    console.log(i);
+  orderDetail(id) {
     return this.app.model.Order.getDetail(id);
   }
   orderPay(id) {
@@ -133,8 +131,8 @@ class OrderService extends Service {
   async setSchedules(id, timeEnd) {
     const { app } = this;
     await app.redis.get('order').set(id, 1);
-    const time = app.getResidualTime();
-    await app.redis.get('order').expire(id, timeEnd);
+    const expireTime = app.getResidualTime(timeEnd);
+    await app.redis.get('order').expire(id, expireTime);
   }
 }
 

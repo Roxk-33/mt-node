@@ -31,13 +31,13 @@ module.exports = app => {
       tableName: 'shop',
     }
   );
-  Shop.associate = function () {
+  Shop.associate = function() {
     Shop.hasMany(app.model.Food, {
       foreignKey: 'shop_id',
       sourceKey: 'id',
       as: 'food_list',
     });
-    Shop.hasMany(app.model.Order, {
+    Shop.hasMany(app.model.OrderList, {
       foreignKey: 'shop_id',
       sourceKey: 'id',
     });
@@ -47,10 +47,10 @@ module.exports = app => {
     });
   };
 
-  Shop.getList = function () {
+  Shop.getList = function() {
     return this.findAll({ limit: 10 });
   };
-  Shop.getDetail = function (id) {
+  Shop.getDetail = function(id) {
     return this.findOne({
       where: {
         id: id,

@@ -34,10 +34,10 @@ class OrderController extends Controller {
   async orderPay() {
     const { ctx, service } = this;
     const { id } = ctx.validateBody(this.rules.pay, ctx);
-    const result = await service.order.orderPay(id);
-    if (result) ctx.success({ order_info: result.data }, '支付订单成功');
+    const { status, msg } = await service.order.orderPay(id);
+    if (status) ctx.success(msg);
     else {
-      ctx.fail(result.msg);
+      ctx.fail(msg);
     }
   }
   async list() {
@@ -61,10 +61,10 @@ class OrderController extends Controller {
   async cancel() {
     const { ctx, service } = this;
     const { id } = ctx.validateParams(this.rules.cancel, ctx);
-    const result = await service.order.cancelOrder(id);
-    if (!!result) ctx.success(result);
+    const { status, msg } = await service.order.cancelOrder(id);
+    if (status) ctx.success(msg);
     else {
-      ctx.fail();
+      ctx.fail(msg);
     }
   }
 }

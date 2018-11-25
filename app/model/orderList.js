@@ -49,8 +49,7 @@ module.exports = app => {
       total_price: FLOAT,
       tel: STRING,
       user_name: STRING,
-      arrival_time: STRING,
-      deadline_pay_time: DATE,
+
       // 订单状态
       // UNPAY: '等待支付',
       // PAY: '已支付',
@@ -75,6 +74,11 @@ module.exports = app => {
       sourceKey: 'id',
       as: 'food_list',
     });
+    orderList.hasMany(app.model.OrderStatusTime, {
+      foreignKey: 'order_id',
+      sourceKey: 'id',
+      as: 'order_status',
+    });
     orderList.belongsTo(app.model.Shop, {
       foreignKey: 'shop_id',
       targetKey: 'id',
@@ -90,7 +94,7 @@ module.exports = app => {
   orderList.createOrder = function(data, t) {
     return this.create(data, { transaction: t });
   };
-  orderList.chagneOrderStatus = function(status, id) {
+  orderList.chagneOrderStatus = function(status, id, t) {
     return this.update({ status }, { where: { id } });
   };
   orderList.getList = function(user_id, offset) {
@@ -111,6 +115,10 @@ module.exports = app => {
           model: orderItem,
           as: 'food_list',
         },
+        {
+          model: app.model.OrderStatusTime,
+          as: 'order_status',
+        },
       ],
     });
   };
@@ -128,6 +136,10 @@ module.exports = app => {
         {
           model: orderItem,
           as: 'food_list',
+        },
+        {
+          model: app.model.OrderStatusTime,
+          as: 'order_status',
         },
       ],
     });

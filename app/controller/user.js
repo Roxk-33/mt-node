@@ -49,6 +49,18 @@ class UserController extends Controller {
           required: true,
         },
       },
+      evalList: {
+        page: {
+          type: 'string',
+          required: true,
+        },
+      },
+      deleteEval: {
+        id: {
+          type: 'string',
+          required: true,
+        },
+      },
     };
   }
 
@@ -132,6 +144,24 @@ class UserController extends Controller {
     const { id } = ctx.validateParams(this.rules.delete, ctx);
     const result = await service.userAddress.delAddress(id);
     if (!!result) ctx.success('删除成功');
+    else {
+      ctx.fail();
+    }
+  }
+  async evalList() {
+    const { ctx, service } = this;
+    const { page } = ctx.validateQuery(this.rules.evalList, ctx);
+    const result = await service.user.getEvalList(ctx.mt.id, page);
+    if (!!result) ctx.success(result);
+    else {
+      ctx.fail();
+    }
+  }
+  async deleteEval() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.deleteEval, ctx);
+    const result = await service.user.deleteEval(id);
+    if (!!result) ctx.success(result);
     else {
       ctx.fail();
     }

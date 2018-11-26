@@ -28,11 +28,7 @@ module.exports = app => {
     });
   };
   FoodSpec.updateStock = function(id, stock, t) {
-    return this.update(
-      { stock: stock },
-      { where: { id: id } },
-      { transaction: t }
-    );
+    return this.update({ stock: stock }, { where: { id: id }, transaction: t });
   };
   return FoodSpec;
 };

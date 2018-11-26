@@ -64,6 +64,15 @@ class UserService extends Service {
   isExist(account) {
     return this.app.model.User.userIsExist(account);
   }
+
+  // 获取评价列表
+  getEvalList(userId, page) {
+    return this.app.model.UserReview.getList(userId, page * 10);
+  }
+  // 获取评价列表
+  deleteEval(id) {
+    return this.app.model.UserReview.deleteItem(id);
+  }
 }
 
 module.exports = UserService;

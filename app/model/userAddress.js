@@ -2,7 +2,7 @@
 const uuidv1 = require('uuid/v1');
 
 module.exports = app => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING, INTEGER, UUID } = app.Sequelize;
 
   const userAddress = app.model.define(
     'userAddress',
@@ -19,7 +19,7 @@ module.exports = app => {
         allowNull: false,
       },
       user_id: {
-        type: STRING,
+        type: UUID,
         allowNull: false,
       },
       is_default: {

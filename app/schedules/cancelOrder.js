@@ -24,8 +24,12 @@ class cancelOrder {
           id,
           transaction
         );
+        await transaction.commit();
+
         return { status: true, data: result };
       } catch (e) {
+        await transaction.rollback();
+
         console.log('自动取消订单失败');
         throw { status: false, msg: e };
       }

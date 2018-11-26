@@ -24,7 +24,9 @@ module.exports = app => {
       photo: STRING, //  照片
       tel: STRING, //  电话
       total_sales: DOUBLE, //  月销
-      rate: FLOAT, //  评分
+      rate: FLOAT, //  商家评分
+      taste_rate: FLOAT, //  口味评分
+      packing_rate: FLOAT, //  包装评分
     },
     {
       timestamps: false,
@@ -49,6 +51,9 @@ module.exports = app => {
 
   Shop.getList = function() {
     return this.findAll({ limit: 10 });
+  };
+  Shop.updateRate = function(data, id) {
+    return this.update(data, { where: { id } });
   };
   Shop.getDetail = function(id) {
     return this.findOne({

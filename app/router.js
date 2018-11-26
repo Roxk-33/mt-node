@@ -22,6 +22,13 @@ module.exports = app => {
     verfiyToken,
     controller.user.delAddress
   );
+  // 评价
+  router.get('/v1/user/evaluation/', verfiyToken, controller.user.evalList);
+  router.delete(
+    '/v1/user/evaluation/:id',
+    verfiyToken,
+    controller.user.deleteEval
+  );
 
   //店铺-列表
   router.get('/v1/shop', controller.shop.getList);
@@ -54,9 +61,19 @@ module.exports = app => {
 
   // 创建订单
   router.post('/v1/order', verfiyToken, controller.order.orderCreate);
-  router.put('/v1/order', verfiyToken, controller.order.orderPay);
+  router.put('/v1/order/pay', verfiyToken, controller.order.orderPay);
+  router.get(
+    '/v1/order/pay/:id',
+    verfiyToken,
+    controller.order.getOrderPayInfo
+  );
 
   router.get('/v1/user/order', verfiyToken, controller.order.list);
   router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
   router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
+  router.post(
+    '/v1/user/order/:id/review',
+    verfiyToken,
+    controller.order.review
+  );
 };

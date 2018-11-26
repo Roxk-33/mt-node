@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, FLOAT, TEXT, BIGINT, DATE } = app.Sequelize;
+  const { STRING, INTEGER, FLOAT, TEXT, BIGINT, UUID } = app.Sequelize;
 
   const orderItem = app.model.define(
     'orderItem',
@@ -9,7 +9,7 @@ module.exports = app => {
       id: { type: BIGINT, primaryKey: true, autoIncrement: true },
       order_id: { type: BIGINT },
       food_id: { type: INTEGER, primaryKey: true },
-      user_id: { type: INTEGER, allowNull: false },
+      user_id: { type: UUID, allowNull: false },
       spec_text: {
         type: INTEGER,
         set(val) {
@@ -40,10 +40,11 @@ module.exports = app => {
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: { type: INTEGER, primaryKey: true },
+      user_id: { type: UUID, primaryKey: true },
       shop_id: { type: INTEGER, allowNull: false },
       user_sex: { type: INTEGER, allowNull: false },
       tableware_num: { type: INTEGER, defaultValue: 0 },
+      review_status: { type: INTEGER, defaultValue: 0 },
       address: { type: STRING, allowNull: false },
       remarks: { type: TEXT, allowNull: true },
       total_price: FLOAT,
@@ -53,8 +54,9 @@ module.exports = app => {
       // 订单状态
       // UNPAY: '等待支付',
       // PAY: '已支付',
+      // ACCEPT: '商家已接单',
       // ONTHEWAY: '送达中',
-      // ACCEPT: '已送达',
+      // ARRIVED: '已送达',
       // ORDER_SUCCESS: '订单已完成',
       // ORDER_REFUND: '退款中',
       // ORDER_CANCEL: '订单已取消',
@@ -74,7 +76,7 @@ module.exports = app => {
       sourceKey: 'id',
       as: 'food_list',
     });
-    orderList.hasMany(app.model.OrderStatusTime, {
+    orderList.hasOne(app.model.OrderStatusTime, {
       foreignKey: 'order_id',
       sourceKey: 'id',
       as: 'order_status',
@@ -95,7 +97,10 @@ module.exports = app => {
     return this.create(data, { transaction: t });
   };
   orderList.chagneOrderStatus = function(status, id, t) {
-    return this.update({ status }, { where: { id } });
+    return this.update({ status }, { where: { id }, transaction: t });
+  };
+  orderList.updateReview = function(id, t) {
+    return this.update({ review_status: 1 }, { where: { id }, transaction: t });
   };
   orderList.getList = function(user_id, offset) {
     return this.findAll({
@@ -118,6 +123,26 @@ module.exports = app => {
         {
           model: app.model.OrderStatusTime,
           as: 'order_status',
+        },
+      ],
+    });
+  };
+  orderList.getOrderPayInfo = function(id) {
+    return orderList.findOne({
+      where: { id },
+      // raw: true,
+      attributes: ['id', 'total_price'],
+      // joinTableAttributes: ['shop_title'],
+      include: [
+        {
+          model: app.model.OrderStatusTime,
+          as: 'order_status',
+          attributes: ['deadline_pay_time'],
+        },
+        {
+          model: app.model.Shop,
+          as: 'shop_info',
+          attributes: ['shop_title'],
         },
       ],
     });

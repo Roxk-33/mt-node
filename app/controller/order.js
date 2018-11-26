@@ -11,6 +11,9 @@ class OrderController extends Controller {
       pay: {
         id: { type: 'number', required: true },
       },
+      payInfo: {
+        id: { type: 'string', required: true },
+      },
       list: {
         page: { type: 'string', required: true },
       },
@@ -20,6 +23,7 @@ class OrderController extends Controller {
       cancel: {
         id: { type: 'string', required: true },
       },
+      review: {},
     };
   }
   async orderCreate() {
@@ -36,6 +40,15 @@ class OrderController extends Controller {
     const { id } = ctx.validateBody(this.rules.pay, ctx);
     const { status, msg } = await service.order.orderPay(id);
     if (status) ctx.success(msg);
+    else {
+      ctx.fail(msg);
+    }
+  }
+  async getOrderPayInfo() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.payInfo, ctx);
+    const result = await service.order.getOrderPayInfo(id);
+    if (!!result) ctx.success(result);
     else {
       ctx.fail(msg);
     }
@@ -62,6 +75,20 @@ class OrderController extends Controller {
     const { ctx, service } = this;
     const { id } = ctx.validateParams(this.rules.cancel, ctx);
     const { status, msg } = await service.order.cancelOrder(id);
+    if (status) ctx.success(msg);
+    else {
+      ctx.fail(msg);
+    }
+  }
+  async review() {
+    const { ctx, service } = this;
+    const data = ctx.validateBody(this.rules.review, ctx);
+    const { id: orderId } = ctx.params;
+    const { status, msg } = await service.order.reviewOrder(
+      data,
+      ctx.mt.id,
+      orderId
+    );
     if (status) ctx.success(msg);
     else {
       ctx.fail(msg);

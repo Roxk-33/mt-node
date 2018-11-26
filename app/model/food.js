@@ -37,11 +37,7 @@ module.exports = app => {
     });
   };
   Food.updateStock = function(id, stock, t) {
-    return this.update(
-      { stock: stock },
-      { where: { id: id } },
-      { transaction: t }
-    );
+    return this.update({ stock: stock }, { where: { id: id }, transaction: t });
   };
   Food.getItem = function(id) {
     return this.findOne({

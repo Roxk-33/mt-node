@@ -44,6 +44,7 @@ module.exports = app => {
   User.getItemByAccount = function(account) {
     return this.findOne({
       where: { account },
+      // attributes: { exclude: ['password'] }
     });
   };
   User.getItemById = function(id) {

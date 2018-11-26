@@ -52,7 +52,7 @@ class OrderService extends Service {
           order_id: orderInfo.id,
           created_time: orderInfo.created_at,
           deadline_pay_time: dead_line_time,
-          arrival_time: _arrivalTime,
+          predict_arrival_time: _arrivalTime,
         },
         transaction
       );
@@ -127,8 +127,12 @@ class OrderService extends Service {
   orderList(userId, page) {
     return this.app.model.OrderList.getList(userId, page * 10);
   }
+
   orderDetail(id) {
     return this.app.model.OrderList.getDetail(id);
+  }
+  getOrderPayInfo(id) {
+    return this.app.model.OrderList.getOrderPayInfo(id);
   }
   async orderPay(id) {
     const { app } = this;
@@ -142,9 +146,48 @@ class OrderService extends Service {
         transaction
       );
       await app.model.OrderList.chagneOrderStatus(orderStatus, id, transaction);
+
+      // 因还未商家端，支付后直接跳到“已完成”状态
+      nowTime.setMinutes(nowTime.getMinutes() + 6);
+      await app.model.OrderStatusTime.updateStatus(
+        id,
+        { accept_time: nowTime },
+        transaction
+      );
+
+      nowTime.setMinutes(nowTime.getMinutes() + 6);
+      await app.model.OrderStatusTime.updateStatus(
+        id,
+        { send_time: nowTime },
+        transaction
+      );
+
+      nowTime.setMinutes(nowTime.getMinutes() + 6);
+      await app.model.OrderStatusTime.updateStatus(
+        id,
+        { arrival_time: nowTime },
+        transaction
+      );
+
+      await app.model.OrderList.chagneOrderStatus(
+        'ORDER_SUCCESS',
+        id,
+        transaction
+      );
+      nowTime.setMinutes(nowTime.getMinutes() + 6);
+      await app.model.OrderStatusTime.updateStatus(
+        id,
+        { complete_time: nowTime },
+        transaction
+      );
+
+      await transaction.commit();
+
       return { status: true, msg: '支付成功' };
     } catch (e) {
       console.log(e);
+      await transaction.rollback();
+
       return { status: false, msg: '支付失败' };
     }
   }
@@ -160,9 +203,13 @@ class OrderService extends Service {
         transaction
       );
       await app.model.OrderList.chagneOrderStatus(orderStatus, id, transaction);
+      await transaction.commit();
+
       return { status: true, msg: `成功取消该订单` };
     } catch (e) {
       console.log(e);
+      await transaction.rollback();
+
       return { status: false, msg: '取消订单失败' };
     }
   }
@@ -171,6 +218,55 @@ class OrderService extends Service {
     await app.redis.get('order').set(id, 1);
     const expireTime = app.getResidualTime(timeEnd);
     await app.redis.get('order').expire(id, expireTime);
+  }
+  // 评价商品
+  async reviewOrder(data, user_id, order_id) {
+    console.log(data);
+    const { app } = this;
+    let {
+      evalTasteStar: taste_rate,
+      evalPackingStar: packing_rate,
+      evalShopStar: rate,
+      isSatisfied: distribution_rate,
+      distributionType: distribution_type,
+      distributionTime: distribution_time,
+      evalFood: review_food,
+      remarks,
+      shopId: shop_id,
+    } = data;
+    review_food = JSON.stringify(review_food);
+    distribution_rate = distribution_rate ? 1 : 0;
+    console.log(distribution_rate);
+    try {
+      let transaction = await app.model.transaction();
+      let postData = {
+        remarks,
+        review_food,
+        distribution_type,
+        distribution_rate,
+        distribution_time,
+        rate,
+        packing_rate,
+        taste_rate,
+        user_id,
+        shop_id,
+        order_id,
+      };
+
+      const isExist = await app.model.UserReview.getItem({ order_id });
+      if (isExist) {
+        // return { status: false, msg: '该订单已评价' };
+      }
+      await app.model.UserReview.createReview(postData, transaction);
+      await app.model.OrderList.updateReview(order_id, transaction);
+      await transaction.commit();
+
+      return { status: true, msg: '评价成功' };
+    } catch (error) {
+      console.log(error);
+      await transaction.rollback();
+      return { status: false, msg: '评价失败' };
+    }
   }
 }
 

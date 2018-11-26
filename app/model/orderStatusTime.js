@@ -19,6 +19,7 @@ module.exports = app => {
       complete_time: DATE,
       cancel_time: DATE,
       arrival_time: DATE,
+      predict_arrival_time: DATE,
       deadline_pay_time: DATE,
     },
     {
@@ -38,11 +39,7 @@ module.exports = app => {
     return this.create(data, { transaction: t });
   };
   orderStatusTime.updateStatus = function(id, updateData, t) {
-    return this.update(
-      updateData,
-      { where: { order_id: id } },
-      { transaction: t }
-    );
+    return this.update(updateData, { where: { order_id: id }, transaction: t });
   };
   return orderStatusTime;
 };

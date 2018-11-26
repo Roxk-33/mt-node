@@ -1,14 +1,14 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, FLOAT } = app.Sequelize;
+  const { STRING, INTEGER, FLOAT, UUID } = app.Sequelize;
 
   const CartList = app.model.define(
     'cartList',
     {
       id: { type: INTEGER, primaryKey: true, autoIncrement: true },
       food_id: { type: INTEGER, primaryKey: true },
-      user_id: { type: INTEGER, primaryKey: true },
+      user_id: { type: UUID, primaryKey: true },
       shop_id: { type: INTEGER, primaryKey: true },
       spec_arr: {
         type: STRING,

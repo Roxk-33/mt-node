@@ -166,6 +166,12 @@ class UserController extends Controller {
       ctx.fail();
     }
   }
+  async uploadAvatar() {
+    const { ctx, service } = this;
+    const { status, data } = await service.user.uploadAvatar();
+    ctx.success({ url: data }, '上传成功');
+    // 获取 steam
+  }
 }
 
 module.exports = UserController;

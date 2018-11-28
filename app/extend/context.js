@@ -66,11 +66,11 @@ module.exports = {
     const ip = this.getCtxIp();
     return await this.service.agent.lookupIp(ip);
   },
-  success(data = null, message) {
+  success(data = null, message = null) {
     const { codeMap } = this.app.config;
     const successMsg = codeMap[200];
     message = message || successMsg;
-    if (this.app.isString(data)) {
+    if (this.app.isString(data) && message !== null) {
       message = data;
       data = null;
     }

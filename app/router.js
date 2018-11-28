@@ -17,6 +17,7 @@ module.exports = app => {
   router.post('/v1/user/register', controller.user.register);
   router.post('/v1/user/address', verfiyToken, controller.user.addAddress);
   router.put('/v1/user/address', verfiyToken, controller.user.editAddress);
+  router.post('/v1/user/avatar', verfiyToken, controller.user.uploadAvatar);
   router.delete(
     '/v1/user/address/:id',
     verfiyToken,

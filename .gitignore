@@ -14,3 +14,4 @@ run/
 fjpublish.config.js
 config/config.prod.js
 config/config.local.js
+app/public/avatar/*

@@ -44,5 +44,8 @@ module.exports = appInfo => {
   config.pay = {
     deadline: 15 * 60, // 支付时间
   };
+  config.multipart = {
+    fileSize: '50mb',
+  };
   return config;
 };

@@ -1,7 +1,10 @@
 'use strict';
 
 const Service = require('egg').Service;
-
+const path = require('path');
+const fs = require('fs');
+const awaitStreamReady = require('await-stream-ready').write;
+const sendToWormhole = require('stream-wormhole');
 class UserService extends Service {
   async login(data) {
     const { ctx, app, service } = this;
@@ -72,6 +75,36 @@ class UserService extends Service {
   // 获取评价列表
   deleteEval(id) {
     return this.app.model.UserReview.deleteItem(id);
+  }
+  async uploadAvatar() {
+    const { app, ctx } = this;
+
+    const stream = await ctx.getFileStream();
+    // 生成文件名
+    const filename =
+      Date.now() +
+      '' +
+      Number.parseInt(Math.random() * 10000) +
+      path.extname(stream.filename);
+    // 写入路径
+    const target = path.join(
+      this.config.baseDir,
+      this.config.uploadImgUrl,
+      'avatar',
+      filename
+    );
+    const writeStream = fs.createWriteStream(target);
+    try {
+      // 写入文件
+      await awaitStreamReady(stream.pipe(writeStream));
+      await app.model.User.updateItem({ avatar: filename }, ctx.mt.id);
+      return { status: true, data: filename };
+    } catch (err) {
+      console.log(err);
+      // 必须将上传的文件流消费掉，要不然浏览器响应会卡死
+      await sendToWormhole(stream);
+      throw '上传失败';
+    }
   }
 }
 

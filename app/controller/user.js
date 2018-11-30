@@ -61,6 +61,12 @@ class UserController extends Controller {
           required: true,
         },
       },
+      getVercode: {
+        phone: {
+          type: 'string',
+          required: true,
+        },
+      },
     };
   }
 
@@ -87,10 +93,10 @@ class UserController extends Controller {
   }
   async updateInfo() {
     const { ctx, service } = this;
-    const { action, data } = ctx.validateBody(this.rules.updateUser, ctx);
+    const data = ctx.validateBody(this.rules.updateUser, ctx);
 
-    const result = await service.user.updateUserInfo(ctx.mt.id, action, data);
-    if (!!result) ctx.success('修改成功');
+    const { status, msg } = await service.user.updateUserInfo(ctx.mt.id, data);
+    if (status) ctx.success(msg);
     else {
       ctx.fail('修改失败');
     }
@@ -170,7 +176,16 @@ class UserController extends Controller {
     const { ctx, service } = this;
     const { status, data } = await service.user.uploadAvatar();
     ctx.success({ url: data }, '上传成功');
-    // 获取 steam
+  }
+  async getVercode() {
+    const { ctx, service } = this;
+    const { phone } = ctx.validateQuery(this.rules.getVercode, ctx);
+    const { status, msg, data } = await service.user.getVercode(phone);
+    if (status) {
+      ctx.success({ code: data }, msg);
+    } else {
+      ctx.fail(msg);
+    }
   }
 }
 

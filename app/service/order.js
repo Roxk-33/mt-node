@@ -14,9 +14,12 @@ class OrderService extends Service {
       arrivalTime,
       tableware,
     } = data;
+
     const cartList = await service.cartList.getCartListByShop(userId, shopId);
     const shopInfo = cartList[0].shop_info;
+    // 预计到达时间
     let _arrivalTime = new Date(arrivalTime);
+    // 总价
     const totalPrice = cartList.reduce(
       (previous, current) => (previous += current.num * current.price),
       shopInfo.freight
@@ -26,10 +29,12 @@ class OrderService extends Service {
     try {
       transaction = await app.model.transaction();
       const dead_line_time = new Date();
-
+      // 设定超时未支付的时间
       dead_line_time.setSeconds(
         dead_line_time.getSeconds() + app.config.pay.deadline
       );
+
+      // 创建订单
       const { dataValues: orderInfo } = await app.model.OrderList.createOrder(
         {
           user_id: userId,
@@ -82,6 +87,7 @@ class OrderService extends Service {
           transaction
         );
 
+        // 删除购物车中已买商品
         await app.model.CartList.deleteItem(
           { id: cartFoodInfo.id },
           transaction
@@ -97,6 +103,7 @@ class OrderService extends Service {
             );
           }
         } else {
+          // 更新库存
           await app.model.Food.updateStock(
             cartFoodInfo.food_id,
             stock,
@@ -107,6 +114,7 @@ class OrderService extends Service {
           await transaction.commit();
         }
       }
+      // 设定redis超时回调函数
       this.setSchedules(orderInfo.id, dead_line_time);
       return { status: true, data: orderInfo };
     } catch (e) {
@@ -236,7 +244,6 @@ class OrderService extends Service {
     } = data;
     review_food = JSON.stringify(review_food);
     distribution_rate = distribution_rate ? 1 : 0;
-    console.log(distribution_rate);
     try {
       let transaction = await app.model.transaction();
       let postData = {

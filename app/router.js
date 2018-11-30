@@ -14,10 +14,12 @@ module.exports = app => {
   router.put('/v1/user', verfiyToken, controller.user.updateInfo); //-更新用户信息
   router.get('/v1/user/address', verfiyToken, controller.user.addressList); //-获取用户收货地址
   router.get('/v1/user/address/:id', verfiyToken, controller.user.address); //-获取用户收货地址详情
+  router.get('/v1/user/phone/vercode', verfiyToken, controller.user.getVercode); //-获取手机修改验证码
   router.post('/v1/user/register', controller.user.register);
   router.post('/v1/user/address', verfiyToken, controller.user.addAddress);
   router.put('/v1/user/address', verfiyToken, controller.user.editAddress);
   router.post('/v1/user/avatar', verfiyToken, controller.user.uploadAvatar);
+
   router.delete(
     '/v1/user/address/:id',
     verfiyToken,

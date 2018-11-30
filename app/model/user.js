@@ -23,6 +23,7 @@ module.exports = app => {
       avatar: {
         type: STRING,
         allowNull: true,
+        defaultValue: 'https://i.loli.net/2018/11/14/5bec27346a028.jpg',
       },
       tel: {
         type: STRING,
@@ -47,9 +48,9 @@ module.exports = app => {
       // attributes: { exclude: ['password'] }
     });
   };
-  User.getItemById = function(id) {
+  User.getItem = function(sql) {
     return this.findOne({
-      where: { id },
+      where: sql,
       attributes: ['id', 'user_name', 'avatar', 'tel', 'account'],
     });
   };

@@ -26,19 +26,22 @@ class OrderController extends Controller {
       review: {},
     };
   }
-  async orderCreate() {
+  async create() {
     const { ctx, service } = this;
-    const data = ctx.validateBody(this.rules.create, ctx);
-    const result = await service.order.orderCreate(ctx.mt.id, data);
-    if (result.status) ctx.success({ order_info: result.data }, '提交订单成功');
+    const orderInfo = ctx.validateBody(this.rules.create, ctx);
+    const { status, data, msg } = await service.order.orderCreate(
+      ctx.mt.id,
+      orderInfo
+    );
+    if (status) ctx.success({ order_info: data }, '提交订单成功');
     else {
-      ctx.fail(result.msg);
+      ctx.fail(msg);
     }
   }
-  async orderPay() {
+  async payOrder() {
     const { ctx, service } = this;
     const { id } = ctx.validateBody(this.rules.pay, ctx);
-    const { status, msg } = await service.order.orderPay(id);
+    const { status, msg } = await service.order.payOrder(id);
     if (status) ctx.success(msg);
     else {
       ctx.fail(msg);
@@ -68,7 +71,7 @@ class OrderController extends Controller {
     const result = await service.order.orderDetail(id);
     if (!!result) ctx.success(result);
     else {
-      ctx.fail();
+      ctx.fail('获取订单失败');
     }
   }
   async cancel() {

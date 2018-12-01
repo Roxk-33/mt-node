@@ -3,7 +3,7 @@
 const Service = require('egg').Service;
 
 class OrderService extends Service {
-  async orderCreate(userId, data) {
+  async orderCreate(userId, orderData) {
     const { service, app } = this;
     // 获取购物车信息
     const {
@@ -13,7 +13,7 @@ class OrderService extends Service {
       cartIdArr,
       arrivalTime,
       tableware,
-    } = data;
+    } = orderData;
 
     const cartList = await service.cartList.getCartListByShop(userId, shopId);
     const shopInfo = cartList[0].shop_info;
@@ -142,7 +142,7 @@ class OrderService extends Service {
   getOrderPayInfo(id) {
     return this.app.model.OrderList.getOrderPayInfo(id);
   }
-  async orderPay(id) {
+  async payOrder(id) {
     const { app } = this;
     const orderStatus = 'PAY';
     try {
@@ -229,7 +229,6 @@ class OrderService extends Service {
   }
   // 评价商品
   async reviewOrder(data, user_id, order_id) {
-    console.log(data);
     const { app } = this;
     let {
       evalTasteStar: taste_rate,

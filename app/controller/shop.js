@@ -11,6 +11,9 @@ class ShopController extends Controller {
       item: {
         id: { type: 'string', required: true },
       },
+      getEvalList: {
+        id: { type: 'string', required: true },
+      },
       create: {
         name: { type: 'string', required: true },
         description: { type: 'string', required: false },
@@ -54,6 +57,13 @@ class ShopController extends Controller {
     const { id } = ctx.validateParams(this.rules.item, ctx);
 
     const data = await service.shop.getShopDetail(id);
+    ctx.success(data);
+  }
+  async getEvalList() {
+    const { ctx, service } = this;
+    const { id } = ctx.validateParams(this.rules.getEvalList, ctx);
+    const { page } = ctx.query || 0;
+    const data = await service.shop.getShopEvalList(id, page);
     ctx.success(data);
   }
 }

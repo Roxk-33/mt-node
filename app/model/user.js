@@ -41,7 +41,6 @@ module.exports = app => {
       tableName: 'user',
     }
   );
-
   User.getItemByAccount = function(account) {
     return this.findOne({
       where: { account },
@@ -51,7 +50,7 @@ module.exports = app => {
   User.getItem = function(sql) {
     return this.findOne({
       where: sql,
-      attributes: ['id', 'user_name', 'avatar', 'tel', 'account'],
+      attributes: { exclude: ['password'] },
     });
   };
   User.createItem = function(data) {

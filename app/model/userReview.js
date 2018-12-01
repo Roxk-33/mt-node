@@ -22,7 +22,14 @@ module.exports = app => {
       distribution_rate: INTEGER,
       distribution_time: STRING,
       remarks: TEXT,
-      review_food: TEXT,
+      review_food: {
+        type: TEXT,
+        get() {
+          let reviewFood = this.getDataValue('review_food');
+          if (reviewFood.length) return JSON.parse(reviewFood);
+          return [];
+        },
+      },
     },
     {
       timezone: '+08:00', //东八时区
@@ -34,6 +41,11 @@ module.exports = app => {
       foreignKey: 'shop_id',
       sourceKey: 'id',
       as: 'shop_info',
+    });
+    userReview.belongsTo(app.model.User, {
+      foreignKey: 'user_id',
+      sourceKey: 'id',
+      as: 'user_info',
     });
   };
 
@@ -58,6 +70,20 @@ module.exports = app => {
   };
   userReview.deleteItem = function(id) {
     return this.destroy({ where: { id } });
+  };
+  userReview.getShopEvalList = function(id, offset) {
+    return this.findAll({
+      where: { shop_id: id },
+      offset,
+      limit: 10,
+      include: [
+        {
+          model: app.model.User,
+          as: 'user_info',
+          attributes: ['user_name', 'avatar'],
+        },
+      ],
+    });
   };
   return userReview;
 };

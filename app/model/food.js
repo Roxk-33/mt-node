@@ -10,6 +10,7 @@ module.exports = app => {
       shop_id: { type: INTEGER, primaryKey: true },
       stock: { type: INTEGER, defaultValue: 10 },
       food_name: STRING,
+      shop_spec_id: { type: INTEGER, allowNull: false },
       unit: STRING,
       price: FLOAT,
       area_id: FLOAT,
@@ -27,15 +28,14 @@ module.exports = app => {
     }
   );
   Food.associate = function() {
-    Food.belongsTo(app.model.Shop, { foreignKey: 'shop_id', targetKey: 'id' });
-  };
-  Food.associate = function() {
-    Food.hasMany(app.model.FoodSpec, {
+    this.belongsTo(app.model.Shop, { foreignKey: 'shop_id', targetKey: 'id' });
+    this.hasMany(app.model.FoodSpec, {
       foreignKey: 'food_id',
       sourceKey: 'id',
       as: 'spec_arr',
     });
   };
+
   Food.updateStock = function(id, stock, t) {
     return this.update({ stock: stock }, { where: { id: id }, transaction: t });
   };

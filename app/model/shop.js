@@ -47,6 +47,11 @@ module.exports = app => {
       foreignKey: 'shop_id',
       sourceKey: 'id',
     });
+    Shop.hasMany(app.model.ShopCatalog, {
+      foreignKey: 'shop_id',
+      sourceKey: 'id',
+      as: 'catalog_list',
+    });
   };
 
   Shop.getList = function() {
@@ -73,6 +78,11 @@ module.exports = app => {
               as: 'spec_arr',
             },
           ],
+        },
+        {
+          model: app.model.ShopCatalog,
+          as: 'catalog_list',
+          attributes: { exclude: ['shop_id'] },
         },
       ],
     });

@@ -6,14 +6,17 @@
 module.exports = app => {
   const { router, controller, middleware } = app;
   const verfiyToken = middleware.verfiyToken(null, app);
-  const userRouter = app.router.namespace('/user');
   // 用户
   router.post('/v1/user/login', controller.user.login); //-登录
   router.get('/v1/user/logout', controller.user.logout); //-登出
-  router.get('/v1/user', verfiyToken, controller.user.getInfo); //-获取用户信息
-  router.put('/v1/user', verfiyToken, controller.user.updateInfo); //-更新用户信息
-  router.get('/v1/user/address', verfiyToken, controller.user.addressList); //-获取用户收货地址
-  router.get('/v1/user/address/:id', verfiyToken, controller.user.address); //-获取用户收货地址详情
+  router.get('/v1/user', verfiyToken, controller.user.getUserInfo); //-获取用户信息
+  router.put('/v1/user', verfiyToken, controller.user.updateUserInfo); //-更新用户信息
+  router.get('/v1/user/address', verfiyToken, controller.user.getAddressList); //-获取用户收货地址
+  router.get(
+    '/v1/user/address/:id',
+    verfiyToken,
+    controller.user.getAddressDetail
+  ); //-获取用户收货地址详情
   router.get('/v1/user/phone/vercode', verfiyToken, controller.user.getVercode); //-获取手机修改验证码
   router.post('/v1/user/register', controller.user.register);
   router.post('/v1/user/address', verfiyToken, controller.user.addAddress);
@@ -26,7 +29,7 @@ module.exports = app => {
     controller.user.delAddress
   );
   // 评价
-  router.get('/v1/user/evaluation/', verfiyToken, controller.user.evalList);
+  router.get('/v1/user/evaluation/', verfiyToken, controller.user.getEvalList);
   router.delete(
     '/v1/user/evaluation/:id',
     verfiyToken,
@@ -37,9 +40,11 @@ module.exports = app => {
   router.get('/v1/shop', controller.shop.getList);
   //店铺-详情
   router.get('/v1/shop/:id', controller.shop.getItem);
+  // 店铺-评价
+  router.get('/v1/shop/:id/eval', controller.shop.getEvalList);
 
   // 获取购物车
-  router.get('/v1/user/cart', verfiyToken, controller.cartList.getList);
+  router.get('/v1/user/cart', verfiyToken, controller.cartList.list);
 
   // 修改购物车内的商品
   router.put('/v1/user/cart', verfiyToken, controller.cartList.updateItem);
@@ -63,17 +68,19 @@ module.exports = app => {
   );
 
   // 创建订单
-  router.post('/v1/order', verfiyToken, controller.order.orderCreate);
-  router.put('/v1/order/pay', verfiyToken, controller.order.orderPay);
+  router.post('/v1/order', verfiyToken, controller.order.create);
+  router.put('/v1/order/pay', verfiyToken, controller.order.payOrder);
   router.get(
     '/v1/order/pay/:id',
     verfiyToken,
     controller.order.getOrderPayInfo
   );
 
+  // 用户-订单
   router.get('/v1/user/order', verfiyToken, controller.order.list);
   router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
   router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
+  // 评价
   router.post(
     '/v1/user/order/:id/review',
     verfiyToken,

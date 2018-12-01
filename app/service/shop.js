@@ -35,6 +35,9 @@ class ShopService extends Service {
     }
     return result;
   }
+  getShopEvalList(id, page) {
+    return this.app.model.UserReview.getShopEvalList(id, page * 10);
+  }
 }
 
 module.exports = ShopService;

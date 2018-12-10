@@ -16,6 +16,7 @@ class OrderController extends Controller {
       },
       list: {
         page: { type: 'string', required: true },
+        type: { type: 'string', required: true },
       },
       detail: {
         id: { type: 'string', required: true },
@@ -61,8 +62,8 @@ class OrderController extends Controller {
   }
   async list() {
     const { ctx, service } = this;
-    const { page } = ctx.validateQuery(this.rules.list, ctx);
-    const result = await service.order.orderList(ctx.mt.id, page);
+    const { page, type } = ctx.validateQuery(this.rules.list, ctx);
+    const result = await service.order.orderList(ctx.mt.id, page, type);
     if (!!result) ctx.success(result);
     else {
       ctx.fail();

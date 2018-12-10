@@ -132,8 +132,19 @@ class OrderService extends Service {
       return result;
     }
   }
-  orderList(userId, page) {
-    return this.app.model.OrderList.getList(userId, page * 10);
+  orderList(userId, page, type) {
+    let condition = { user_id: userId };
+
+    if (type === 'all') {
+      return this.app.model.OrderList.getList(condition, page * 10);
+    }
+    if (type === 'eval') {
+      console.log({ ...condition, review_status: 0 });
+      return this.app.model.OrderList.getList(
+        { ...condition, review_status: 0, status: 'ORDER_SUCCESS' },
+        page * 10
+      );
+    }
   }
 
   orderDetail(id) {
@@ -252,8 +263,9 @@ class OrderService extends Service {
 
       const isExist = await app.model.UserReview.getItem({ order_id });
       if (isExist) {
-        // return { status: false, msg: '该订单已评价' };
+        return { status: false, msg: '该订单已评价' };
       }
+
       await app.model.UserReview.createReview(postData, transaction);
       await app.model.OrderList.updateReview(order_id, transaction);
       await transaction.commit();

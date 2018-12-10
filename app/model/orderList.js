@@ -102,9 +102,9 @@ module.exports = app => {
   orderList.updateReview = function(id, t) {
     return this.update({ review_status: 1 }, { where: { id }, transaction: t });
   };
-  orderList.getList = function(user_id, offset) {
+  orderList.getList = function(condition, offset) {
     return this.findAll({
-      where: { user_id },
+      where: condition,
       offset,
       limit: 10,
       order: [

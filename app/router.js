@@ -79,6 +79,12 @@ module.exports = app => {
   // 用户-订单
   router.get('/v1/user/order', verfiyToken, controller.order.list);
   router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
+  router.put(
+    '/v1/user/order/:id/confirm',
+    verfiyToken,
+    controller.order.confirmOrder
+  );
+  // 用户-取消订单
   router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
   // 评价
   router.post(

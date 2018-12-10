@@ -142,6 +142,7 @@ class OrderService extends Service {
   getOrderPayInfo(id) {
     return this.app.model.OrderList.getOrderPayInfo(id);
   }
+  // 支付订单
   async payOrder(id) {
     const { app } = this;
     const orderStatus = 'PAY';
@@ -176,19 +177,7 @@ class OrderService extends Service {
         { arrival_time: nowTime },
         transaction
       );
-
-      await app.model.OrderList.chagneOrderStatus(
-        'ORDER_SUCCESS',
-        id,
-        transaction
-      );
-      nowTime.setMinutes(nowTime.getMinutes() + 6);
-      await app.model.OrderStatusTime.updateStatus(
-        id,
-        { complete_time: nowTime },
-        transaction
-      );
-
+      await app.model.OrderList.chagneOrderStatus('ARRIVED', id, transaction);
       await transaction.commit();
 
       return { status: true, msg: '支付成功' };
@@ -199,6 +188,8 @@ class OrderService extends Service {
       return { status: false, msg: '支付失败' };
     }
   }
+  // 取消订单
+  // TODO:需要确认是否是订单的用户发起的请求
   async cancelOrder(id) {
     let orderStatus = 'ORDER_CANCEL';
     const { app } = this;
@@ -273,6 +264,45 @@ class OrderService extends Service {
       await transaction.rollback();
       return { status: false, msg: '评价失败' };
     }
+  }
+  // 确认收货
+  async confirmOrder(shopId, orderId) {
+    const { app } = this;
+    const nowTime = new Date();
+    try {
+      let transaction = await app.model.transaction();
+      await app.model.OrderStatusTime.updateStatus(
+        orderId,
+        { complete_time: nowTime },
+        transaction
+      );
+      await app.model.OrderList.chagneOrderStatus(
+        'ORDER_SUCCESS',
+        orderId,
+        transaction
+      );
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      return { status: false, msg: '操作失败' };
+    }
+
+    const saleData = await app.model.ShopSale.getItem(shopId);
+    console.log(saleData);
+    if (!saleData) {
+      await app.model.ShopSale.createItem({ shop_id: shopId });
+    } else {
+      let saleTime = new Date(saleData.created_at);
+      console.log(saleTime.getDate(), nowTime.getDate());
+      if (saleTime.getDate() == nowTime.getDate()) {
+        console.log();
+        await app.model.ShopSale.updateItem(++saleData.sale, saleData.id);
+      } else {
+        await app.model.ShopSale.createItem({ shop_id: shopId });
+      }
+    }
+
+    return { status: true, msg: 'ok' };
   }
 }
 

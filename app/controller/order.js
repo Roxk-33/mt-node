@@ -24,6 +24,9 @@ class OrderController extends Controller {
         id: { type: 'string', required: true },
       },
       review: {},
+      confirmOrder: {
+        shopId: { type: 'number', required: true },
+      },
     };
   }
   async create() {
@@ -78,6 +81,17 @@ class OrderController extends Controller {
     const { ctx, service } = this;
     const { id } = ctx.validateParams(this.rules.cancel, ctx);
     const { status, msg } = await service.order.cancelOrder(id);
+    if (status) ctx.success(msg);
+    else {
+      ctx.fail(msg);
+    }
+  }
+  async confirmOrder() {
+    const { ctx, service } = this;
+    const { shopId } = ctx.validateBody(this.rules.confirmOrder, ctx);
+    const { id: orderId } = ctx.params;
+    console.log(shopId, orderId);
+    const { status, msg } = await service.order.confirmOrder(shopId, orderId);
     if (status) ctx.success(msg);
     else {
       ctx.fail(msg);

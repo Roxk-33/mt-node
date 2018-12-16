@@ -123,10 +123,7 @@ class UserService extends Service {
     try {
       // 写入文件
       await awaitStreamReady(stream.pipe(writeStream));
-      await app.model.User.updateItem(
-        { avatar: `https:static.lococo.site/avatar/${filename}` },
-        ctx.mt.id
-      );
+      await app.model.User.updateItem({ avatar: filename }, ctx.mt.id);
       return { status: true, data: filename };
     } catch (err) {
       console.log(err);

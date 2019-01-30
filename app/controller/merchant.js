@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 
-class AdminController extends Controller {
+class MerchantController extends Controller {
   get rules() {
     return {
       create: {
@@ -70,4 +70,4 @@ class AdminController extends Controller {
   }
 }
 
-module.exports = AdminController;
+module.exports = MerchantController;

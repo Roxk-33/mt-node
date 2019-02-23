@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-	const { STRING, INTEGER, FLOAT, TEXT, DOUBLE } = app.Sequelize;
+	const { STRING, INTEGER, FLOAT, TEXT, DOUBLE, DATE } = app.Sequelize;
 
 	const Shop = app.model.define(
 		'shop',
@@ -28,7 +28,9 @@ module.exports = app => {
 			total_sales: DOUBLE, //  月销
 			rate: FLOAT, //  商家评分
 			taste_rate: FLOAT, //  口味评分
-			packing_rate: FLOAT //  包装评分
+			packing_rate: FLOAT, //  包装评分
+			business_hours: DATE, // 开业时间
+			closing_hours: DATE // 休业时间
 		},
 		{
 			timestamps: false,

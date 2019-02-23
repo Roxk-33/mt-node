@@ -41,7 +41,7 @@ class OrderService extends Service {
 			const { dataValues: orderStatus } = await app.model.OrderStatusTime.createStatus(
 				{
 					order_id: orderInfo.id,
-					created_time: orderInfo.created_at,
+					created_at: orderInfo.created_at,
 					deadline_pay_time: dead_line_time,
 					predict_arrival_time: _arrivalTime
 				},

@@ -21,7 +21,9 @@ module.exports = app => {
 			cancel_time: DATE,
 			arrival_time: DATE,
 			predict_arrival_time: DATE,
-			deadline_pay_time: DATE
+			deadline_pay_time: DATE,
+			apply_refund_time: DATE, // 申请退款时间
+			refund_time: DATE // 退款时间
 		},
 		{
 			timezone: '+08:00', //东八时区

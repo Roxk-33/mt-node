@@ -58,7 +58,7 @@ module.exports = app => {
 			// ONTHEWAY: '送达中',
 			// ARRIVED: '已送达',
 			// ORDER_SUCCESS: '订单已完成',
-			// ORDER_REFUND: '退款中',
+			// ORDER_REFUND: '申请退款中',
 			// ORDER_CANCEL: '订单已取消',
 			// ORDER_CANCEL_TIMEOUT: '订单已取消',
 			status: { type: STRING, defaultValue: 'UNPAY' },

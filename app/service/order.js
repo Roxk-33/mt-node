@@ -28,7 +28,7 @@ class OrderService extends Service {
 					user_id: userId,
 					shop_id: shopId,
 					remarks: remarks,
-					address: address.address,
+					address: address.address + '' + address.stress,
 					total_price: totalPrice,
 					freight: shopInfo.freight,
 					tel: address.tel,
@@ -90,6 +90,15 @@ class OrderService extends Service {
 			}
 			// 设定redis超时回调函数
 			this.setSchedules(orderInfo.id, dead_line_time);
+
+			// 存储orderID
+			let orderIdArr = await app.redis.get('shop_order').get(shopId);
+			orderIdArr = orderIdArr
+				.split(',')
+				.push(orderInfo.id)
+				.join(',');
+			await app.redis.get('shop_order').set(shopId, orderIdArr);
+
 			return { status: true, data: orderInfo };
 		} catch (e) {
 			console.log('出错');
@@ -133,36 +142,30 @@ class OrderService extends Service {
 			const nowTime = new Date();
 			await app.model.OrderStatusTime.updateStatus(id, { pay_time: nowTime }, transaction);
 			await app.model.OrderList.changeOrderStatus(orderStatus, id, transaction);
-
-			// nowTime.setMinutes(nowTime.getMinutes() + 6);
-			// await app.model.OrderStatusTime.updateStatus(
-			//   id,
-			//   { accept_time: nowTime },
-			//   transaction
-			// );
-
-			// nowTime.setMinutes(nowTime.getMinutes() + 6);
-			// await app.model.OrderStatusTime.updateStatus(
-			//   id,
-			//   { send_time: nowTime },
-			//   transaction
-			// );
-
-			// nowTime.setMinutes(nowTime.getMinutes() + 6);
-			// await app.model.OrderStatusTime.updateStatus(
-			//   id,
-			//   { arrival_time: nowTime },
-			//   transaction
-			// );
-			// await app.model.OrderList.changeOrderStatus('ARRIVED', id, transaction);
 			await transaction.commit();
-
 			return { status: true, msg: '支付成功' };
 		} catch (e) {
 			console.log(e);
 			await transaction.rollback();
 
 			return { status: false, msg: '支付失败' };
+		}
+	}
+	// 申请退款
+	async applyRefund(data, userId) {
+		const orderStatus = 'ORDER_REFUND';
+		const { app } = this;
+		const nowTime = new Date();
+		try {
+			let transaction = await app.model.transaction();
+			await app.model.OrderStatusTime.updateStatus(datda.orderId, { apply_refund_time: nowTime }, transaction);
+			await app.model.OrderList.changeOrderStatus(orderStatus, datda.orderId, transaction);
+			await transaction.commit();
+			return { status: true, msg: `申请成功` };
+		} catch (error) {
+			console.log(error);
+			await transaction.rollback();
+			return { status: false, msg: '申请失败' };
 		}
 	}
 	// 取消订单
@@ -181,7 +184,6 @@ class OrderService extends Service {
 		} catch (e) {
 			console.log(e);
 			await transaction.rollback();
-
 			return { status: false, msg: '取消订单失败' };
 		}
 	}

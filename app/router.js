@@ -56,6 +56,7 @@ module.exports = app => {
 	router.get('/v1/user/order', verfiyToken, controller.order.list);
 	router.get('/v1/user/order/:id', verfiyToken, controller.order.detail);
 	router.put('/v1/user/order/:id/confirm', verfiyToken, controller.order.confirmOrder);
+	router.put('/v1/user/order/:id/refund', verfiyToken, controller.order.applyRefund); // 申请退款
 	// 用户-取消订单
 	router.put('/v1/user/order/:id', verfiyToken, controller.order.cancel);
 	// 评价

@@ -93,10 +93,15 @@ class OrderService extends Service {
 
 			// 存储orderID
 			let orderIdArr = await app.redis.get('shop_order').get(shopId);
-			orderIdArr = orderIdArr
-				.split(',')
-				.push(orderInfo.id)
-				.join(',');
+			if (!orderIdArr) {
+				orderIdArr = orderInfo.id;
+			} else {
+				orderIdArr = orderIdArr
+					.split(',')
+					.push(orderInfo.id)
+					.join(',');
+			}
+
 			await app.redis.get('shop_order').set(shopId, orderIdArr);
 
 			return { status: true, data: orderInfo };

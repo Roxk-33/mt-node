@@ -81,6 +81,11 @@ module.exports = app => {
 						{
 							model: app.model.FoodSpec,
 							as: 'spec_arr'
+						},
+						{
+							model: app.model.FoodDiscountList,
+							attributes: ['discount', 'original'],
+							as: 'discount_info'
 						}
 					]
 				},

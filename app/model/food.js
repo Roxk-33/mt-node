@@ -29,6 +29,7 @@ module.exports = app => {
 	);
 	Food.associate = function() {
 		this.belongsTo(app.model.Shop, { foreignKey: 'shop_id', targetKey: 'id' });
+		this.belongsTo(app.model.FoodDiscountList, { foreignKey: 'id', targetKey: 'food_id', as: 'discount_info' });
 		this.hasMany(app.model.FoodSpec, {
 			foreignKey: 'food_id',
 			sourceKey: 'id',

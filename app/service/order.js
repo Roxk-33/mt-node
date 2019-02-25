@@ -3,17 +3,61 @@
 const Service = require('egg').Service;
 
 class OrderService extends Service {
+	//
+	// 计算总价
+	async calTotalPrice(userId, shopId, cartIdArr) {
+		const { service } = this;
+
+		const cartList = await service.cartList.getCartListByShop(userId, shopId);
+		const shopInfo = cartList[0].shop_info;
+		// 总价，先加上运费
+		let totalPrice = shopInfo.freight || 0;
+		const len = cartList.length;
+		// 选购的商品
+		const cartListBuy = [];
+		for (let i = 0; i < len; i++) {
+			const item = cartList[i];
+
+			// 未选中该商品
+			if (cartIdArr.length && cartIdArr.indexOf(item.id) === -1) continue;
+
+			// 折扣商品
+			if (item.food_info.discount_info === null) {
+				item.price = item.food_info.price;
+			} else {
+				item.price = item.food_info.discount_info.discount;
+			}
+
+			item.food_name = item.food_info.food_name;
+			item.picture = item.food_info.picture;
+			item.spec_text = [];
+			// 规格产品,需要加上规格价格
+			if (item.spec_arr.length) {
+				item.spec_text = [];
+				item.price = item.spec_arr.reduce((price, current) => {
+					const specArr = item.food_info.spec_arr;
+					const index = specArr.findIndex(specItem => current == specItem.id);
+					price += specArr[index].price;
+					item.spec_text.push(specArr[index].label);
+					return price;
+				}, item.food_info.price);
+			}
+			cartListBuy.push(item);
+			totalPrice += item.price;
+		}
+		return { totalPrice, shopInfo, cartList: cartListBuy };
+	}
 	async orderCreate(userId, orderData) {
 		const { service, app } = this;
 		// 获取购物车信息
 		const { shopId, address, remarks, cartIdArr, arrivalTime, tableware } = orderData;
 
-		const cartList = await service.cartList.getCartListByShop(userId, shopId);
-		const shopInfo = cartList[0].shop_info;
 		// 预计到达时间
 		let _arrivalTime = new Date(arrivalTime);
 		// 总价
-		const totalPrice = cartList.reduce((previous, current) => (previous += current.num * current.price), shopInfo.freight);
+		const result = await this.calTotalPrice(userId, shopId, cartIdArr);
+		const { totalPrice, shopInfo, cartList } = result;
+
 		// 创建订单
 		let transaction;
 		try {
@@ -51,8 +95,6 @@ class OrderService extends Service {
 			const len = cartList.length;
 			for (let index = 0; index < len; index++) {
 				const cartFoodInfo = cartList[index];
-				// 不在所选商品中
-				if (cartIdArr.length && cartIdArr.indexOf(cartFoodInfo.id) === -1) continue;
 				const { status, stock } = await service.shop.detectStock(cartFoodInfo);
 				// 无库存
 				if (!status) {
@@ -92,17 +134,13 @@ class OrderService extends Service {
 			this.setSchedules(orderInfo.id, dead_line_time);
 
 			// 存储orderID
-			let orderIdArr = await app.redis.get('shop_order').get(shopId);
-			if (!orderIdArr) {
-				orderIdArr = orderInfo.id;
+			let orderIdStr = await app.redis.get('shop_order').get(shopId);
+			if (!orderIdStr) {
+				orderIdStr = orderInfo.id;
 			} else {
-				orderIdArr = orderIdArr
-					.split(',')
-					.push(orderInfo.id)
-					.join(',');
+				orderIdStr += ',' + orderInfo.id;
 			}
-
-			await app.redis.get('shop_order').set(shopId, orderIdArr);
+			await app.redis.get('shop_order').set(shopId, orderIdStr);
 
 			return { status: true, data: orderInfo };
 		} catch (e) {
@@ -127,7 +165,6 @@ class OrderService extends Service {
 			return this.app.model.OrderList.getList(condition, page * 10);
 		}
 		if (type === 'eval') {
-			console.log({ ...condition, review_status: 0 });
 			return this.app.model.OrderList.getList({ ...condition, review_status: 0, status: 'ORDER_SUCCESS' }, page * 10);
 		}
 	}
@@ -251,14 +288,11 @@ class OrderService extends Service {
 		}
 
 		const saleData = await app.model.ShopSale.getItem(shopId);
-		console.log(saleData);
 		if (!saleData) {
 			await app.model.ShopSale.createItem({ shop_id: shopId });
 		} else {
 			let saleTime = new Date(saleData.created_at);
-			console.log(saleTime.getDate(), nowTime.getDate());
 			if (saleTime.getDate() == nowTime.getDate()) {
-				console.log();
 				await app.model.ShopSale.updateItem(++saleData.sale, saleData.id);
 			} else {
 				await app.model.ShopSale.createItem({ shop_id: shopId });

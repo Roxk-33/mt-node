@@ -53,7 +53,7 @@ class OrderService extends Service {
 		const { shopId, address, remarks, cartIdArr, arrivalTime, tableware } = orderData;
 
 		// 预计到达时间
-		let _arrivalTime = new Date(arrivalTime);
+		let _arrivalTime = new Date();
 		// 总价
 		const result = await this.calTotalPrice(userId, shopId, cartIdArr);
 		const { totalPrice, shopInfo, cartList } = result;
@@ -238,16 +238,23 @@ class OrderService extends Service {
 	// 评价商品
 	async reviewOrder(data, user_id, order_id) {
 		const { app } = this;
-		let { evalTasteStar: taste_rate, evalPackingStar: packing_rate, evalShopStar: rate, isSatisfied: distribution_rate, distributionType: distribution_type, distributionTime: distribution_time, evalFood: review_food, remarks, shopId: shop_id } = data;
-		review_food = JSON.stringify(review_food);
-		distribution_rate = distribution_rate ? 1 : 0;
+		let {
+			evalTasteStar: taste_rate,
+			evalPackingStar: packing_rate,
+			evalShopStar: rate,
+			// isSatisfied: distribution_rate,
+			// distributionType: distribution_type,
+			distributionTime: distribution_time,
+			remarks,
+			shopId: shop_id
+		} = data;
+		// distribution_rate = distribution_rate ? 1 : 0;
 		try {
 			let transaction = await app.model.transaction();
 			let postData = {
 				remarks,
-				review_food,
-				distribution_type,
-				distribution_rate,
+				// distribution_type,
+				// distribution_rate,
 				distribution_time,
 				rate,
 				packing_rate,
@@ -257,12 +264,13 @@ class OrderService extends Service {
 				order_id
 			};
 
-			const isExist = await app.model.UserReview.getItem({ order_id });
+			const isExist = await app.model.OrderReview.getItem({ order_id });
 			if (isExist) {
 				return { status: false, msg: '该订单已评价' };
 			}
 
-			await app.model.UserReview.createReview(postData, transaction);
+			await app.model.OrderReview.createReview(postData, transaction);
+			// 标志订单已评价
 			await app.model.OrderList.updateReview(order_id, transaction);
 			await transaction.commit();
 
@@ -279,7 +287,7 @@ class OrderService extends Service {
 		const nowTime = new Date();
 		try {
 			let transaction = await app.model.transaction();
-			await app.model.OrderStatusTime.updateStatus(orderId, { complete_time: nowTime }, transaction);
+			await app.model.OrderStatusTime.updateStatus(orderId, { complete_time: nowTime, arrival_time: nowTime }, transaction);
 			await app.model.OrderList.changeOrderStatus('ORDER_SUCCESS', orderId, transaction);
 			await transaction.commit();
 		} catch (error) {

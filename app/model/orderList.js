@@ -56,8 +56,7 @@ module.exports = app => {
 			// PAY: '已支付',
 			// ACCEPT: '商家已接单',
 			// ONTHEWAY: '送达中',
-			// ARRIVED: '已送达',
-			// ORDER_SUCCESS: '订单已完成',
+			// ORDER_SUCCESS: '订单已完成,已送达',
 			// ORDER_REFUND: '申请退款中',
 			// ORDER_CANCEL: '订单已取消',
 			// ORDER_CANCEL_TIMEOUT: '订单已取消',
@@ -80,6 +79,11 @@ module.exports = app => {
 			foreignKey: 'order_id',
 			sourceKey: 'id',
 			as: 'order_status'
+		});
+		orderList.hasOne(app.model.OrderReview, {
+			foreignKey: 'order_id',
+			sourceKey: 'id',
+			as: 'order_review'
 		});
 		orderList.belongsTo(app.model.Shop, {
 			foreignKey: 'shop_id',
@@ -165,6 +169,11 @@ module.exports = app => {
 				{
 					model: app.model.OrderStatusTime,
 					as: 'order_status'
+				},
+				{
+					model: app.model.OrderReview,
+					as: 'order_review',
+					attributes: ['packing_rate', 'remarks', 'rate', 'taste_rate']
 				}
 			]
 		});

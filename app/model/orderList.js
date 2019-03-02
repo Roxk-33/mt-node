@@ -118,7 +118,8 @@ module.exports = app => {
 			include: [
 				{
 					model: app.model.Shop,
-					as: 'shop_info'
+					as: 'shop_info',
+					attributes: ['photo', 'shop_title', 'id']
 				},
 				{
 					model: orderItem,

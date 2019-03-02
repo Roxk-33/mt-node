@@ -93,6 +93,9 @@ module.exports = app => {
 			return this.destroy({ where: data });
 		}
 	};
+	CartList.deleteFood = function(id) {
+		return this.destroy({ where: { id } });
+	};
 
 	CartList.getItem = function(id) {
 		return this.findOne({ where: { id } });

@@ -231,9 +231,9 @@ class OrderService extends Service {
 	}
 	async setSchedules(id, timeEnd) {
 		const { app } = this;
-		await app.redis.get('order').set(id, 1);
+		await app.redis.get('cancel_order').set(id, 1);
 		const expireTime = app.getResidualTime(timeEnd);
-		await app.redis.get('order').expire(id, expireTime);
+		await app.redis.get('cancel_order').expire(id, expireTime);
 	}
 	// 评价商品
 	async reviewOrder(data, user_id, order_id) {

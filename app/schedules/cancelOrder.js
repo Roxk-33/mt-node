@@ -1,6 +1,6 @@
 class cancelOrder {
 	constructor(app) {
-		const sub = app.redis.get('sub');
+		const sub = app.redis.get('sub_cancel_order');
 		const cancel = this.cancel.bind(this);
 		sub.psubscribe('__keyevent@' + 1 + '__:expired');
 		sub.on('pmessage', async function(pattern, channel, expiredKey) {

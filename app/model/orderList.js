@@ -155,9 +155,9 @@ module.exports = app => {
 	orderList.createOrderFood = function(data, t) {
 		return orderItem.create(data, { transaction: t });
 	};
-	orderList.getDetail = function(id) {
+	orderList.getDetail = function(condition) {
 		return this.findOne({
-			where: { id },
+			where: condition,
 			include: [
 				{
 					model: app.model.Shop,

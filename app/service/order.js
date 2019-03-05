@@ -78,18 +78,18 @@ class OrderService extends Service {
 					tel: address.tel,
 					user_name: address.user_name,
 					user_sex: address.user_sex,
-					tableware_num: tableware
+					tableware_num: tableware,
 				},
-				transaction
+				transaction,
 			);
 			const { dataValues: orderStatus } = await app.model.OrderStatusTime.createStatus(
 				{
 					order_id: orderInfo.id,
 					created_at: orderInfo.created_at,
 					deadline_pay_time: dead_line_time,
-					predict_arrival_time: _arrivalTime
+					predict_arrival_time: _arrivalTime,
 				},
-				transaction
+				transaction,
 			);
 			orderInfo.order_status = orderStatus;
 			const len = cartList.length;
@@ -109,9 +109,9 @@ class OrderService extends Service {
 						price: cartFoodInfo.price,
 						num: cartFoodInfo.num,
 						food_picture: cartFoodInfo.picture,
-						food_name: cartFoodInfo.food_name
+						food_name: cartFoodInfo.food_name,
 					},
-					transaction
+					transaction,
 				);
 
 				// 删除购物车中已买商品
@@ -170,7 +170,7 @@ class OrderService extends Service {
 	}
 
 	orderDetail(id) {
-		return this.app.model.OrderList.getDetail(id);
+		return this.app.model.OrderList.getDetail({ id });
 	}
 	getOrderPayInfo(id) {
 		return this.app.model.OrderList.getOrderPayInfo(id);
@@ -212,10 +212,15 @@ class OrderService extends Service {
 	}
 	// 取消订单
 	// TODO:需要确认是否是订单的用户发起的请求
-	async cancelOrder(id) {
+	async cancelOrder(id, userId) {
 		let orderStatus = 'ORDER_CANCEL';
 		const { app } = this;
 		const nowTime = new Date();
+		// 订单只有在『已支付』状态才能取消
+		const canChange = await app.model.OrderList.getDetail({ id, status: 'PAY' });
+		if (!canChange) {
+			return { status: false, msg: '订单已被商家接单不能取消' };
+		}
 		try {
 			let transaction = await app.model.transaction();
 			await app.model.OrderStatusTime.updateStatus(id, { cancel_time: nowTime }, transaction);
@@ -246,7 +251,7 @@ class OrderService extends Service {
 			// distributionType: distribution_type,
 			distributionTime: distribution_time,
 			remarks,
-			shopId: shop_id
+			shopId: shop_id,
 		} = data;
 		// distribution_rate = distribution_rate ? 1 : 0;
 		try {
@@ -261,7 +266,7 @@ class OrderService extends Service {
 				taste_rate,
 				user_id,
 				shop_id,
-				order_id
+				order_id,
 			};
 
 			const isExist = await app.model.OrderReview.getItem({ order_id });

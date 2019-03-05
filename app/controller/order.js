@@ -83,7 +83,7 @@ class OrderController extends Controller {
 	async cancel() {
 		const { ctx, service } = this;
 		const { id } = ctx.validateParams(this.rules.cancel, ctx);
-		const { status, msg } = await service.order.cancelOrder(id);
+		const { status, msg } = await service.order.cancelOrder(id,ctx.mt.id);
 		if (status) ctx.success(msg);
 		else {
 			ctx.fail(msg);

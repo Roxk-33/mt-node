@@ -20,17 +20,17 @@ module.exports = app => {
 					let specText = this.getDataValue('spec_text');
 					if (specText.length) return specText.split(',');
 					return [];
-				}
+				},
 			},
 			food_picture: STRING,
 			food_name: STRING,
 			num: INTEGER,
-			price: FLOAT
+			price: FLOAT,
 		},
 		{
 			timestamps: false,
-			tableName: 'order_item'
-		}
+			tableName: 'order_item',
+		},
 	);
 	const orderList = app.model.define(
 		'orderList',
@@ -38,7 +38,7 @@ module.exports = app => {
 			id: {
 				type: BIGINT,
 				primaryKey: true,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			user_id: { type: UUID, primaryKey: true },
 			shop_id: { type: INTEGER, allowNull: false },
@@ -61,40 +61,40 @@ module.exports = app => {
 			// ORDER_CANCEL: '订单已取消',
 			// ORDER_CANCEL_TIMEOUT: '订单已取消',
 			status: { type: STRING, defaultValue: 'UNPAY' },
-			freight: FLOAT
+			freight: FLOAT,
 		},
 		{
 			timezone: '+08:00', //东八时区
-			tableName: 'order_list'
-		}
+			tableName: 'order_list',
+		},
 	);
 
 	orderList.associate = function() {
 		orderList.hasMany(orderItem, {
 			foreignKey: 'order_id',
 			sourceKey: 'id',
-			as: 'food_list'
+			as: 'food_list',
 		});
 		orderList.hasOne(app.model.OrderStatusTime, {
 			foreignKey: 'order_id',
 			sourceKey: 'id',
-			as: 'order_status'
+			as: 'order_status',
 		});
 		orderList.hasOne(app.model.OrderReview, {
 			foreignKey: 'order_id',
 			sourceKey: 'id',
-			as: 'order_review'
+			as: 'order_review',
 		});
 		orderList.belongsTo(app.model.Shop, {
 			foreignKey: 'shop_id',
 			targetKey: 'id',
-			as: 'shop_info'
+			as: 'shop_info',
 		});
 	};
 	orderItem.associate = function() {
 		orderItem.belongsTo(orderList, {
 			foreignKey: 'order_id',
-			targetKey: 'id'
+			targetKey: 'id',
 		});
 	};
 	orderList.createOrder = function(data, t) {
@@ -113,23 +113,23 @@ module.exports = app => {
 			limit: 10,
 			order: [
 				// 将转义标题，并根据有效的方向参数列表验证DESC
-				['created_at', 'DESC']
+				['created_at', 'DESC'],
 			],
 			include: [
 				{
 					model: app.model.Shop,
 					as: 'shop_info',
-					attributes: ['photo', 'shop_title', 'id']
+					attributes: ['photo', 'shop_title', 'id'],
 				},
 				{
 					model: orderItem,
-					as: 'food_list'
+					as: 'food_list',
 				},
 				{
 					model: app.model.OrderStatusTime,
-					as: 'order_status'
-				}
-			]
+					as: 'order_status',
+				},
+			],
 		});
 	};
 	orderList.getOrderPayInfo = function(id) {
@@ -142,14 +142,14 @@ module.exports = app => {
 				{
 					model: app.model.OrderStatusTime,
 					as: 'order_status',
-					attributes: ['deadline_pay_time']
+					attributes: ['deadline_pay_time'],
 				},
 				{
 					model: app.model.Shop,
 					as: 'shop_info',
-					attributes: ['shop_title']
-				}
-			]
+					attributes: ['shop_title'],
+				},
+			],
 		});
 	};
 	orderList.createOrderFood = function(data, t) {
@@ -161,22 +161,35 @@ module.exports = app => {
 			include: [
 				{
 					model: app.model.Shop,
-					as: 'shop_info'
+					as: 'shop_info',
 				},
 				{
 					model: orderItem,
-					as: 'food_list'
+					as: 'food_list',
 				},
 				{
 					model: app.model.OrderStatusTime,
-					as: 'order_status'
+					as: 'order_status',
 				},
 				{
 					model: app.model.OrderReview,
 					as: 'order_review',
-					attributes: ['packing_rate', 'remarks', 'rate', 'taste_rate']
-				}
-			]
+					attributes: ['packing_rate', 'remarks', 'rate', 'taste_rate'],
+				},
+			],
+		});
+	};
+	orderList.getPayList = function() {
+		return this.findAll({
+			where: { status: 'PAY' },
+			attributes: ['id'],
+			include: [
+				{
+					model: app.model.OrderStatusTime,
+					as: 'order_status',
+					attributes: ['deadline_pay_time'],
+				},
+			],
 		});
 	};
 	return orderList;

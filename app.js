@@ -1,6 +1,7 @@
-const cancel = require('./app/schedules/cancelOrder.js');
+const cancel = require('./app/utils/cancelOrder.js');
 module.exports = app => {
-  app.beforeStart(async () => {
-    new cancel(app);
-  });
+	app.beforeStart(async () => {
+		new cancel(app);
+		await app.runSchedule('cancelOrder');
+	});
 };

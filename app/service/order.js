@@ -303,13 +303,13 @@ class OrderService extends Service {
 			return { status: false, msg: '评价失败' };
 		}
 	}
-	// 确认收货
+	// 确认送达
 	async confirmOrder(shopId, orderId) {
 		const { app } = this;
 		const nowTime = new Date();
 		try {
 			let transaction = await app.model.transaction();
-			await app.model.OrderStatusTime.updateStatus(orderId, { complete_time: nowTime, arrival_time: nowTime }, transaction);
+			await app.model.OrderStatusTime.updateStatus(orderId, { complete_time: nowTime }, transaction);
 			await app.model.OrderList.changeOrderStatus('ORDER_SUCCESS', orderId, transaction);
 			await transaction.commit();
 		} catch (error) {

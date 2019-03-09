@@ -19,7 +19,6 @@ module.exports = app => {
 			send_time: DATE,
 			complete_time: DATE,
 			cancel_time: DATE,
-			arrival_time: DATE,
 			predict_arrival_time: DATE,
 			deadline_pay_time: DATE,
 			refund_fail_time: DATE, // 拒绝退款时间

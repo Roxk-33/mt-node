@@ -9,7 +9,7 @@ module.exports = app => {
 			id: {
 				type: INTEGER,
 				primaryKey: true,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			order_id: BIGINT,
 			created_at: DATE,
@@ -22,18 +22,19 @@ module.exports = app => {
 			arrival_time: DATE,
 			predict_arrival_time: DATE,
 			deadline_pay_time: DATE,
+			refund_fail_time: DATE, // 拒绝退款时间
 			apply_refund_time: DATE, // 申请退款时间
-			refund_time: DATE // 退款时间
+			refund_time: DATE, // 退款时间
 		},
 		{
 			timezone: '+08:00', //东八时区
-			tableName: 'order_status_time'
-		}
+			tableName: 'order_status_time',
+		},
 	);
 	orderStatusTime.associate = function() {
 		orderStatusTime.belongsTo(app.model.OrderList, {
 			foreignKey: 'order_id',
-			targetKey: 'id'
+			targetKey: 'id',
 		});
 	};
 

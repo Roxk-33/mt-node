@@ -55,10 +55,11 @@ module.exports = app => {
 			// UNPAY: '等待支付',
 			// PAY: '已支付',
 			// ACCEPT: '商家已接单',
-			// ONTHEWAY: '送达中',
+			// ONTHEWAY: '订单配送中',
 			// ORDER_SUCCESS: '订单已完成,已送达',
 			// ORDER_REFUNDING: '申请退款中',
 			// ORDER_REFUND: '申请退款中',
+			// ORDER_REFUND_FAIL_ONTHEWAY:'商家拒绝退款,商品配送中'
 			// ORDER_CANCEL: '订单已取消',
 			// ORDER_CANCEL_TIMEOUT: '订单已取消',
 			status: { type: STRING, defaultValue: 'UNPAY' },
@@ -180,18 +181,6 @@ module.exports = app => {
 			],
 		});
 	};
-	orderList.getPayList = function() {
-		return this.findAll({
-			where: { status: 'PAY' },
-			attributes: ['id'],
-			include: [
-				{
-					model: app.model.OrderStatusTime,
-					as: 'order_status',
-					attributes: ['deadline_pay_time'],
-				},
-			],
-		});
-	};
+
 	return orderList;
 };

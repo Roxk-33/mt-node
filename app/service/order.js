@@ -331,29 +331,6 @@ class OrderService extends Service {
 
 		return { status: true, msg: 'ok' };
 	}
-	// 清理超时未支付订单
-	async cleanOverTimeOrder() {
-		const { app } = this;
-		const list = await app.model.OrderList.getPayList();
-		let orderStatus = 'ORDER_CANCEL_TIMEOUT';
-		if (list) {
-			for (const item of list) {
-				const nowTime = new Date();
-				if (nowTime >= item.order_status.deadline_pay_time) {
-					try {
-						let transaction = await app.model.transaction();
-						await app.model.OrderStatusTime.updateStatus(item.id, { cancel_time: nowTime }, transaction);
-						await app.model.OrderList.changeOrderStatus(orderStatus, item.id, transaction);
-						await transaction.commit();
-					} catch (e) {
-						await transaction.rollback();
-						console.log('自动取消订单失败');
-						throw { status: false, msg: e };
-					}
-				}
-			}
-		}
-	}
 }
 
 module.exports = OrderService;

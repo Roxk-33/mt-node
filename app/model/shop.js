@@ -2,7 +2,7 @@
 
 module.exports = app => {
 	const { STRING, INTEGER, FLOAT, TEXT, DOUBLE, DATE } = app.Sequelize;
-
+	const Op = app.Sequelize.Op;
 	const Shop = app.model.define(
 		'shop',
 		{
@@ -10,18 +10,19 @@ module.exports = app => {
 				type: INTEGER,
 				primaryKey: true,
 				autoIncrement: true,
-				unique: true
+				unique: true,
 			},
 			shop_title: STRING,
 			threshold: FLOAT, //  门槛
 			freight: FLOAT, //  配送费
-			longitude: FLOAT,
+			longitude: STRING,
 			privince: INTEGER,
 			city: INTEGER,
 			area: INTEGER,
-			latitude: FLOAT,
+			latitude: STRING,
 			species: { type: INTEGER, allowNull: false, defaultValue: 1 }, //  种类
 			announcement: TEXT, //  公告
+			geohash: INTEGER,
 			address: TEXT, //  地址
 			photo: STRING, //  照片
 			tel: STRING, //  电话
@@ -30,36 +31,39 @@ module.exports = app => {
 			taste_rate: FLOAT, //  口味评分
 			packing_rate: FLOAT, //  包装评分
 			business_hours: DATE, // 开业时间
-			closing_hours: DATE // 休业时间
+			closing_hours: DATE, // 休业时间
 		},
 		{
 			timestamps: false,
-			tableName: 'shop'
-		}
+			tableName: 'shop',
+		},
 	);
 	Shop.associate = function() {
 		Shop.hasMany(app.model.Food, {
 			foreignKey: 'shop_id',
 			sourceKey: 'id',
-			as: 'food_list'
+			as: 'food_list',
 		});
 		Shop.hasMany(app.model.OrderList, {
 			foreignKey: 'shop_id',
-			sourceKey: 'id'
+			sourceKey: 'id',
 		});
 		Shop.hasMany(app.model.CartList, {
 			foreignKey: 'shop_id',
-			sourceKey: 'id'
+			sourceKey: 'id',
 		});
 		Shop.hasMany(app.model.ShopCatalog, {
 			foreignKey: 'shop_id',
 			sourceKey: 'id',
-			as: 'category_list'
+			as: 'category_list',
 		});
 	};
 
 	Shop.getList = function() {
 		return this.findAll({ limit: 10 });
+	};
+	Shop.getListByLoc = function(geohash) {
+		return this.findAll({ where: { geohash: { [Op.like]: geohash + '%' } } });
 	};
 	Shop.updateRate = function(data, id) {
 		return this.update(data, { where: { id } });
@@ -68,33 +72,33 @@ module.exports = app => {
 	Shop.getDetail = function(id) {
 		return this.findOne({
 			where: {
-				id: id
+				id: id,
 			},
 			include: [
 				{
 					model: app.model.Food,
 					as: 'food_list',
 					where: {
-						shop_id: id
+						shop_id: id,
 					},
 					include: [
 						{
 							model: app.model.FoodSpec,
-							as: 'spec_arr'
+							as: 'spec_arr',
 						},
 						{
 							model: app.model.FoodDiscountList,
 							attributes: ['discount', 'original'],
-							as: 'discount_info'
-						}
-					]
+							as: 'discount_info',
+						},
+					],
 				},
 				{
 					model: app.model.ShopCatalog,
 					as: 'category_list',
-					attributes: { exclude: ['shop_id'] }
-				}
-			]
+					attributes: { exclude: ['shop_id'] },
+				},
+			],
 		});
 	};
 

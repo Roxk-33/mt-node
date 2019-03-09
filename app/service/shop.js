@@ -4,17 +4,20 @@ const Service = require('egg').Service;
 const geohash = require('ngeohash');
 
 class ShopService extends Service {
-	getShopList(data) {
-		let geohashVal = geohash.encode(data.lat, data.lng, 13);
-		let len = geohashVal.length - 1 - data.page;
-		geohashVal = geohashVal.substr(0, len);
+	async getShopList(data) {
+		let geohashVal = geohash.encode(data.lat, data.lng, 10);
+
+		let len = geohashVal.length - 3 - data.page;
 		// // 八个方向
 		// let geohashValArr = geohash.neighbors(geohashVal);
 		// geohashValArr = geohashValArr.map(item => {
+		// 	console.log('item:', item);
 		// 	item = item.substr(0, len);
 		// 	return item;
 		// });
-		return this.app.model.Shop.getListByLoc(geohashVal);
+		geohashVal = geohashVal.substr(0, len);
+		const offset = parseInt(data.total);
+		return this.app.model.Shop.getListByLoc(geohashVal, offset);
 	}
 	getShopDetail(id) {
 		return this.app.model.Shop.getDetail(id);

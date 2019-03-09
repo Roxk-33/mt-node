@@ -6,13 +6,14 @@ class ShopController extends Controller {
 	get rules() {
 		return {
 			list: {
-				page: { type: 'string', required: false }
+				page: { type: 'string', required: true },
+				total: { type: 'string', required: true },
 			},
 			item: {
-				id: { type: 'string', required: true }
+				id: { type: 'string', required: true },
 			},
 			getEvalList: {
-				id: { type: 'string', required: true }
+				id: { type: 'string', required: true },
 			},
 			create: {
 				name: { type: 'string', required: true },
@@ -23,9 +24,9 @@ class ShopController extends Controller {
 					itemType: 'object',
 					rule: {
 						key: 'string',
-						value: 'string'
-					}
-				}
+						value: 'string',
+					},
+				},
 			},
 			update: {
 				name: { type: 'string', required: false },
@@ -36,10 +37,10 @@ class ShopController extends Controller {
 					itemType: 'object',
 					rule: {
 						key: 'string',
-						value: 'string'
-					}
-				}
-			}
+						value: 'string',
+					},
+				},
+			},
 		};
 	}
 	async getList() {
@@ -48,7 +49,7 @@ class ShopController extends Controller {
 		const data = await service.shop.getShopList(info);
 		ctx.body = {
 			data: data,
-			status: true
+			status: true,
 		};
 	}
 	async getItem() {

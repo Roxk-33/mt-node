@@ -22,7 +22,7 @@ module.exports = app => {
 			latitude: STRING,
 			species: { type: INTEGER, allowNull: false, defaultValue: 1 }, //  种类
 			announcement: TEXT, //  公告
-			geohash: INTEGER,
+			geohash: STRING,
 			address: TEXT, //  地址
 			photo: STRING, //  照片
 			tel: STRING, //  电话
@@ -62,8 +62,8 @@ module.exports = app => {
 	Shop.getList = function() {
 		return this.findAll({ limit: 10 });
 	};
-	Shop.getListByLoc = function(geohash) {
-		return this.findAll({ where: { geohash: { [Op.like]: geohash + '%' } } });
+	Shop.getListByLoc = function(geohash, offset) {
+		return this.findAll({ where: { geohash: { [Op.like]: geohash + '%' } }, offset, limit: 10 });
 	};
 	Shop.updateRate = function(data, id) {
 		return this.update(data, { where: { id } });

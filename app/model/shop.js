@@ -26,7 +26,7 @@ module.exports = app => {
 			address: TEXT, //  地址
 			photo: STRING, //  照片
 			tel: STRING, //  电话
-			total_sales: DOUBLE, //  月销
+			month_sale: { type: DOUBLE, allowNull: false, defaultValue: 0 }, //  月销
 			rate: FLOAT, //  商家评分
 			taste_rate: FLOAT, //  口味评分
 			packing_rate: FLOAT, //  包装评分
@@ -67,6 +67,9 @@ module.exports = app => {
 	};
 	Shop.updateRate = function(data, id) {
 		return this.update(data, { where: { id } });
+	};
+	Shop.updateMonthSale = function(id, t) {
+		return app.model.query(`UPDATE shop set month_sale = month_sale + 1 where id = ${id}`, { transaction: t });
 	};
 
 	Shop.getDetail = function(id) {

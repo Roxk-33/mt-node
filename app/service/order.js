@@ -195,7 +195,7 @@ class OrderService extends Service {
 	}
 	// 申请退款
 	async applyRefund(data, userId) {
-		const orderStatus = 'ORDER_REFUND';
+		const orderStatus = 'ORDER_REFUNDING';
 		const { app } = this;
 		const nowTime = new Date();
 		try {
@@ -211,27 +211,44 @@ class OrderService extends Service {
 		}
 	}
 	// 取消订单
-	// TODO:需要确认是否是订单的用户发起的请求
 	async cancelOrder(id, userId) {
-		let orderStatus = 'ORDER_CANCEL';
 		const { app } = this;
 		const nowTime = new Date();
 		// 订单只有在『已支付』状态才能取消
-		const canChange = await app.model.OrderList.getDetail({ id, status: 'PAY' });
-		if (!canChange) {
-			return { status: false, msg: '订单已被商家接单不能取消' };
+		const orderDetail = await app.model.OrderList.getDetail({ id, user_id: userId });
+		if (!orderDetail) {
+			return { status: false, msg: '非法操作' };
 		}
+		if (['ORDER_SUCCESS', 'ORDER_REFUNDING', 'ORDER_CANCEL', 'ORDER_CANCEL_TIMEOUT'].includes(orderDetail.status)) {
+			return { status: false, msg: '当前订单状态不允许取消订单' };
+		}
+
+		let orderStatus = '';
+		let orderStatusTime = '';
+		let successMsg = '';
+		// 判断商家是否已经接单
+		if (orderDetail.status === 'PAY') {
+			orderStatus = 'ORDER_CANCEL';
+			orderStatusTime = { cancel_time: nowTime };
+			successMsg = '成功取消订单';
+		}
+		// 已接单,需要商家同意才能取消订单
+		if (orderDetail.status === 'ONTHEWAY') {
+			orderStatus = 'ORDER_REFUNDING';
+			orderStatusTime = { apply_refund_time: nowTime };
+			successMsg = '成功申请取消订单';
+		}
+
 		try {
 			let transaction = await app.model.transaction();
-			await app.model.OrderStatusTime.updateStatus(id, { cancel_time: nowTime }, transaction);
+			await app.model.OrderStatusTime.updateStatus(id, orderStatusTime, transaction);
 			await app.model.OrderList.changeOrderStatus(orderStatus, id, transaction);
 			await transaction.commit();
-
-			return { status: true, msg: `成功取消该订单` };
+			return { status: true, msg: successMsg };
 		} catch (e) {
 			console.log(e);
 			await transaction.rollback();
-			return { status: false, msg: '取消订单失败' };
+			return { status: false, msg: '操作失败' };
 		}
 	}
 	async setSchedules(id, timeEnd) {

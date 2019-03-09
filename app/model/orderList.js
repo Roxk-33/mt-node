@@ -57,6 +57,7 @@ module.exports = app => {
 			// ACCEPT: '商家已接单',
 			// ONTHEWAY: '送达中',
 			// ORDER_SUCCESS: '订单已完成,已送达',
+			// ORDER_REFUNDING: '申请退款中',
 			// ORDER_REFUND: '申请退款中',
 			// ORDER_CANCEL: '订单已取消',
 			// ORDER_CANCEL_TIMEOUT: '订单已取消',

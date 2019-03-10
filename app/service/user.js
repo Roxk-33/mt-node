@@ -92,8 +92,8 @@ class UserService extends Service {
 		const userRedis = await app.redis.get('user');
 
 		const isExist = await app.model.User.getItem({ tel: phone });
-
-		const code = Math.floor(Math.random() * 8999 + 1000) + 1;
+		const code = 1234;
+		// const code = Math.floor(Math.random() * 8999 + 1000) + 1;
 		if (!isExist) {
 			// 生成验证码
 			await userRedis.set(userId, code);

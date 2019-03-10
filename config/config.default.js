@@ -49,5 +49,6 @@ module.exports = appInfo => {
 	config.multipart = {
 		fileSize: '50mb',
 	};
+
 	return config;
 };

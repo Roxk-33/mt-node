@@ -1,3 +1,7 @@
+const awaitStreamReady = require('await-stream-ready').write;
+const sendToWormhole = require('stream-wormhole');
+const path = require('path');
+const fs = require('fs');
 module.exports = {
 	processPayload(payload) {
 		if (!payload) return null;
@@ -42,7 +46,7 @@ module.exports = {
 					name: 'string',
 					email: 'string',
 				},
-				author
+				author,
 			);
 		} else if (!isObjectId(author)) {
 			this.throw(422, '发布人不存在');
@@ -89,5 +93,24 @@ module.exports = {
 		console.log(body);
 		if (error) body.error = error;
 		this.body = body;
+	},
+	async uploadImage(folder) {
+		const stream = await this.getFileStream();
+		const { baseDir, uploadImgUrl, absolutePath } = this.app.config;
+		// 生成文件名
+		const filename = Date.now() + '' + Number.parseInt(Math.random() * 10000) + path.extname(stream.filename);
+		// 写入路径
+		const target = path.join(baseDir, uploadImgUrl, folder, filename);
+		const writeStream = fs.createWriteStream(target);
+		try {
+			// 写入文件
+			await awaitStreamReady(stream.pipe(writeStream));
+
+			return { status: true, data: `${absolutePath}/${folder}/${filename}` };
+		} catch (err) {
+			// 必须将上传的文件流消费掉，要不然浏览器响应会卡死
+			await sendToWormhole(stream);
+			throw err;
+		}
 	},
 };

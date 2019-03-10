@@ -3,7 +3,6 @@
 const Service = require('egg').Service;
 
 class OrderService extends Service {
-	//
 	// 计算总价
 	async calTotalPrice(userId, shopId, cartIdArr) {
 		const { service } = this;
@@ -317,18 +316,18 @@ class OrderService extends Service {
 			await transaction.rollback();
 			return { status: false, msg: '操作失败' };
 		}
-		// TODO:需要优化+1操作
-		const saleData = await app.model.ShopSale.getItem(shopId);
-		if (!saleData) {
-			await app.model.ShopSale.createItem({ shop_id: shopId });
-		} else {
-			let saleTime = new Date(saleData.created_at);
-			if (saleTime.getDate() == nowTime.getDate()) {
-				await app.model.ShopSale.updateItem(++saleData.sale, saleData.id);
-			} else {
-				await app.model.ShopSale.createItem({ shop_id: shopId });
-			}
-		}
+		// // TODO:需要优化+1操作
+		// const saleData = await app.model.ShopSale.getItem(shopId);
+		// if (!saleData) {
+		// 	await app.model.ShopSale.createItem({ shop_id: shopId });
+		// } else {
+		// 	let saleTime = new Date(saleData.created_at);
+		// 	if (saleTime.getDate() == nowTime.getDate()) {
+		// 		await app.model.ShopSale.updateItem(++saleData.sale, saleData.id);
+		// 	} else {
+		// 		await app.model.ShopSale.createItem({ shop_id: shopId });
+		// 	}
+		// }
 
 		return { status: true, msg: 'ok' };
 	}

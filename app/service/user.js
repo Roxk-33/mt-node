@@ -37,7 +37,7 @@ class UserService extends Service {
 		password = ctx.helper.mdPassWord(password);
 		const { dataValues: user } = await app.model.User.createItem({
 			password,
-			account
+			account,
 		});
 		let token = app.generateToken({ id: user.id });
 		return { token, user };
@@ -104,24 +104,10 @@ class UserService extends Service {
 	}
 	async uploadAvatar() {
 		const { app, ctx } = this;
-
-		const stream = await ctx.getFileStream();
-		// 生成文件名
-		const filename = Date.now() + '' + Number.parseInt(Math.random() * 10000) + path.extname(stream.filename);
-		// 写入路径
-		const target = path.join(this.config.baseDir, this.config.uploadImgUrl, 'avatar', filename);
-		const writeStream = fs.createWriteStream(target);
-		try {
-			// 写入文件
-			await awaitStreamReady(stream.pipe(writeStream));
-			await app.model.User.updateItem({ avatar: filename }, ctx.mt.id);
-			return { status: true, data: filename };
-		} catch (err) {
-			console.log(err);
-			// 必须将上传的文件流消费掉，要不然浏览器响应会卡死
-			await sendToWormhole(stream);
-			throw err;
-		}
+		const folder = 'userAvatar';
+		const result = await ctx.uploadImage(folder);
+		await app.model.User.updateItem({ avatar: result.data }, ctx.mt.id);
+		return result;
 	}
 
 	getAddressInfo(id) {

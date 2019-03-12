@@ -21,7 +21,7 @@ module.exports = app => {
 
 	router.delete('/client/user/address/:id', verfiyToken, controller.user.delAddress);
 	// 评价
-	router.get('/client/user/evaluation/', verfiyToken, controller.user.getEvalList);
+	router.get('/client/user/evaluation/', verfiyToken, controller.user.getUserReviewList);
 	router.delete('/client/user/evaluation/:id', verfiyToken, controller.user.deleteEval);
 
 	//店铺-列表
@@ -29,7 +29,7 @@ module.exports = app => {
 	//店铺-详情
 	router.get('/client/shop/:id', controller.shop.getItem);
 	// 店铺-评价
-	router.get('/client/shop/:id/eval', controller.shop.getEvalList);
+	router.get('/client/shop/:id/eval', controller.shop.getShopReview);
 
 	// 获取购物车
 	router.get('/client/user/cart', verfiyToken, controller.cartList.list);

@@ -48,8 +48,8 @@ class ShopService extends Service {
 		}
 		return result;
 	}
-	getShopEvalList(id, page) {
-		return this.app.model.UserReview.getShopEvalList(id, page * 10);
+	getShopReviewList(id, page) {
+		return this.app.model.OrderReview.getShopReviewList(id, page * 10);
 	}
 }
 

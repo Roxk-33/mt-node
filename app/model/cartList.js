@@ -20,40 +20,40 @@ module.exports = app => {
 					let specId = this.getDataValue('spec_arr');
 					if (specId && specId.length) return specId.split(',');
 					return [];
-				}
+				},
 			},
 			num: {
 				type: INTEGER,
-				defaultValue: 1
+				defaultValue: 1,
 			},
 			spec_text: {
 				type: INTEGER,
 				set(val) {
-					if (val.length === 0) this.setDataValue('spec_text', '');
+					if (val && val.length === 0) this.setDataValue('spec_text', '');
 					else this.setDataValue('spec_text', val.join(','));
 				},
 				get() {
 					let specText = this.getDataValue('spec_text');
 					if (specText && specText.length) return specText.split(',');
 					return [];
-				}
-			}
+				},
+			},
 		},
 		{
 			timestamps: false,
-			tableName: 'cart_list'
-		}
+			tableName: 'cart_list',
+		},
 	);
 	CartList.associate = function() {
 		CartList.belongsTo(app.model.Shop, {
 			foreignKey: 'shop_id',
 			targetKey: 'id',
-			as: 'shop_info'
+			as: 'shop_info',
 		});
 		CartList.belongsTo(app.model.Food, {
 			foreignKey: 'food_id',
 			targetKey: 'id',
-			as: 'food_info'
+			as: 'food_info',
 		});
 	};
 	CartList.getList = function(search) {
@@ -63,7 +63,7 @@ module.exports = app => {
 				{
 					model: app.model.Shop,
 					as: 'shop_info',
-					attributes: ['id', 'shop_title', 'photo', 'freight', 'threshold']
+					attributes: ['id', 'shop_title', 'photo', 'freight', 'threshold'],
 				},
 				{
 					model: app.model.Food,
@@ -74,16 +74,16 @@ module.exports = app => {
 						{
 							model: app.model.FoodSpec,
 							as: 'spec_arr',
-							attributes: ['id', 'price', 'label']
+							attributes: ['id', 'price', 'label'],
 						},
 						{
 							model: app.model.FoodDiscountList,
 							attributes: ['discount', 'original'],
-							as: 'discount_info'
-						}
-					]
-				}
-			]
+							as: 'discount_info',
+						},
+					],
+				},
+			],
 		});
 	};
 	CartList.deleteItem = function(data, t = null) {
@@ -107,10 +107,10 @@ module.exports = app => {
 				food_id: data.food_id,
 				user_id: data.user_id,
 				spec_arr: data.spec_arr, // 以逗号分隔的规格id群组
-				spec_text: data.spec_text
+				spec_text: data.spec_text,
 				// price: data.price,
 				// food_name: data.food_name
-			}
+			},
 		});
 	};
 	CartList.updateNum = function(id, num) {
@@ -123,7 +123,7 @@ module.exports = app => {
 			user_id: data.userId,
 			spec_arr: data.specArr, // 以逗号分隔的规格id群组
 			num: data.num,
-			spec_text: data.specText
+			spec_text: data.specText,
 			// price: data.totalPrice,
 			// food_name: data.foodName,
 			// picture: data.picture

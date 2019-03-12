@@ -10,7 +10,7 @@ module.exports = app => {
 				type: INTEGER,
 				primaryKey: true,
 				autoIncrement: true,
-				unique: true
+				unique: true,
 			},
 			order_id: BIGINT,
 			user_id: UUID,
@@ -21,27 +21,27 @@ module.exports = app => {
 			distribution_type: INTEGER,
 			distribution_rate: INTEGER,
 			distribution_time: STRING,
-			remarks: TEXT
+			remarks: TEXT,
 		},
 		{
 			timezone: '+08:00', //东八时区
-			tableName: 'order_reviews'
-		}
+			tableName: 'order_reviews',
+		},
 	);
 	orderReview.associate = function() {
 		orderReview.belongsTo(app.model.Shop, {
 			foreignKey: 'shop_id',
 			sourceKey: 'id',
-			as: 'shop_info'
+			as: 'shop_info',
 		});
 		orderReview.belongsTo(app.model.User, {
 			foreignKey: 'user_id',
 			sourceKey: 'id',
-			as: 'user_info'
+			as: 'user_info',
 		});
 	};
 
-	orderReview.getList = function(id, offset) {
+	orderReview.getUserReviewList = function(id, offset) {
 		return this.findAll({
 			where: { user_id: id },
 			offset,
@@ -49,9 +49,9 @@ module.exports = app => {
 			include: [
 				{
 					model: app.model.Shop,
-					as: 'shop_info'
-				}
-			]
+					as: 'shop_info',
+				},
+			],
 		});
 	};
 	orderReview.createReview = function(data, t) {
@@ -63,7 +63,7 @@ module.exports = app => {
 	orderReview.deleteItem = function(id) {
 		return this.destroy({ where: { id } });
 	};
-	orderReview.getShopEvalList = function(id, offset) {
+	orderReview.getShopReviewList = function(id, offset) {
 		return this.findAll({
 			where: { shop_id: id },
 			offset,
@@ -72,9 +72,9 @@ module.exports = app => {
 				{
 					model: app.model.User,
 					as: 'user_info',
-					attributes: ['user_name', 'avatar']
-				}
-			]
+					attributes: ['user_name', 'avatar'],
+				},
+			],
 		});
 	};
 	return orderReview;

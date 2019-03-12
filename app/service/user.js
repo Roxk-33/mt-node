@@ -77,8 +77,8 @@ class UserService extends Service {
 	}
 
 	// 获取评价列表
-	getEvalList(userId, page) {
-		return this.app.model.OrderReview.getList(userId, page * 10);
+	getUserReviewList(userId, page) {
+		return this.app.model.OrderReview.getUserReviewList(userId, page * 10);
 	}
 	// 获取评价列表
 	deleteEval(id) {

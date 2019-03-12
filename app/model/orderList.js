@@ -3,35 +3,6 @@
 module.exports = app => {
 	const { STRING, INTEGER, FLOAT, TEXT, BIGINT, UUID } = app.Sequelize;
 
-	const orderItem = app.model.define(
-		'orderItem',
-		{
-			id: { type: BIGINT, primaryKey: true, autoIncrement: true },
-			order_id: { type: BIGINT },
-			food_id: { type: INTEGER, primaryKey: true },
-			user_id: { type: UUID, allowNull: false },
-			spec_text: {
-				type: INTEGER,
-				set(val) {
-					if (val.length === 0) this.setDataValue('spec_text', '');
-					else this.setDataValue('spec_text', val.join(','));
-				},
-				get() {
-					let specText = this.getDataValue('spec_text');
-					if (specText.length) return specText.split(',');
-					return [];
-				},
-			},
-			food_picture: STRING,
-			food_name: STRING,
-			num: INTEGER,
-			price: FLOAT,
-		},
-		{
-			timestamps: false,
-			tableName: 'order_item',
-		},
-	);
 	const orderList = app.model.define(
 		'orderList',
 		{
@@ -72,7 +43,7 @@ module.exports = app => {
 	);
 
 	orderList.associate = function() {
-		orderList.hasMany(orderItem, {
+		orderList.hasMany(app.model.OrderItem, {
 			foreignKey: 'order_id',
 			sourceKey: 'id',
 			as: 'food_list',
@@ -93,12 +64,7 @@ module.exports = app => {
 			as: 'shop_info',
 		});
 	};
-	orderItem.associate = function() {
-		orderItem.belongsTo(orderList, {
-			foreignKey: 'order_id',
-			targetKey: 'id',
-		});
-	};
+
 	orderList.createOrder = function(data, t) {
 		return this.create(data, { transaction: t });
 	};
@@ -124,7 +90,7 @@ module.exports = app => {
 					attributes: ['photo', 'shop_title', 'id'],
 				},
 				{
-					model: orderItem,
+					model: app.model.OrderItem,
 					as: 'food_list',
 				},
 				{
@@ -154,9 +120,7 @@ module.exports = app => {
 			],
 		});
 	};
-	orderList.createOrderFood = function(data, t) {
-		return orderItem.create(data, { transaction: t });
-	};
+
 	orderList.getDetail = function(condition) {
 		return this.findOne({
 			where: condition,
@@ -166,7 +130,7 @@ module.exports = app => {
 					as: 'shop_info',
 				},
 				{
-					model: orderItem,
+					model: app.model.OrderItem,
 					as: 'food_list',
 				},
 				{

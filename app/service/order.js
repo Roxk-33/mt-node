@@ -99,7 +99,7 @@ class OrderService extends Service {
 				if (!status) {
 					throw cartFoodInfo;
 				}
-				await app.model.OrderList.createOrderFood(
+				await app.model.OrderItem.createOrderFood(
 					{
 						user_id: userId,
 						order_id: orderInfo.id,

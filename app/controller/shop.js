@@ -12,7 +12,7 @@ class ShopController extends Controller {
 			item: {
 				id: { type: 'string', required: true },
 			},
-			getEvalList: {
+			getShopReview: {
 				id: { type: 'string', required: true },
 			},
 			create: {
@@ -59,11 +59,11 @@ class ShopController extends Controller {
 		const data = await service.shop.getShopDetail(id);
 		ctx.success(data);
 	}
-	async getEvalList() {
+	async getShopReview() {
 		const { ctx, service } = this;
-		const { id } = ctx.validateParams(this.rules.getEvalList, ctx);
+		const { id } = ctx.validateParams(this.rules.getShopReview, ctx);
 		const { page } = ctx.query || 0;
-		const data = await service.shop.getShopEvalList(id, page);
+		const data = await service.shop.getShopReviewList(id, page);
 		ctx.success(data);
 	}
 }

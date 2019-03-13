@@ -49,6 +49,7 @@ class ShopService extends Service {
 		return result;
 	}
 	getShopReviewList(id, page) {
+		console.log('%cid: ', 'color: MidnightBlue; background: Aquamarine; font-size: 20px;', id);
 		return this.app.model.OrderReview.getShopReviewList(id, page * 10);
 	}
 }

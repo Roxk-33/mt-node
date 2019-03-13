@@ -32,7 +32,7 @@ module.exports = app => {
 		},
 	);
 	orderItem.associate = function() {
-		orderItem.belongsTo(app.model.orderList, {
+		orderItem.belongsTo(app.model.OrderList, {
 			foreignKey: 'order_id',
 			targetKey: 'id',
 		});

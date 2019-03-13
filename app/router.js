@@ -26,10 +26,10 @@ module.exports = app => {
 
 	//店铺-列表
 	router.get('/client/shop', controller.shop.getList);
+	// 店铺-评价
+	router.get('/client/shop/:id/review', controller.shop.getShopReview);
 	//店铺-详情
 	router.get('/client/shop/:id', controller.shop.getItem);
-	// 店铺-评价
-	router.get('/client/shop/:id/eval', controller.shop.getShopReview);
 
 	// 获取购物车
 	router.get('/client/user/cart', verfiyToken, controller.cartList.list);

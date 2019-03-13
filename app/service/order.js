@@ -310,25 +310,11 @@ class OrderService extends Service {
 			let transaction = await app.model.transaction();
 			await app.model.OrderStatusTime.updateStatus(orderId, { complete_time: nowTime }, transaction);
 			await app.model.OrderList.changeOrderStatus('ORDER_SUCCESS', orderId, transaction);
-			await app.model.Shop.updateMonthSale(shopId, transaction);
 			await transaction.commit();
 		} catch (error) {
 			await transaction.rollback();
 			return { status: false, msg: '操作失败' };
 		}
-		// // TODO:需要优化+1操作
-		// const saleData = await app.model.ShopSale.getItem(shopId);
-		// if (!saleData) {
-		// 	await app.model.ShopSale.createItem({ shop_id: shopId });
-		// } else {
-		// 	let saleTime = new Date(saleData.created_at);
-		// 	if (saleTime.getDate() == nowTime.getDate()) {
-		// 		await app.model.ShopSale.updateItem(++saleData.sale, saleData.id);
-		// 	} else {
-		// 		await app.model.ShopSale.createItem({ shop_id: shopId });
-		// 	}
-		// }
-
 		return { status: true, msg: 'ok' };
 	}
 }

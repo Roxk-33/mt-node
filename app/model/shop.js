@@ -12,6 +12,10 @@ module.exports = app => {
 				autoIncrement: true,
 				unique: true,
 			},
+			month_sale: {
+				type: DOUBLE,
+				defaultValue: 0,
+			},
 			shop_title: STRING,
 			threshold: FLOAT, //  门槛
 			freight: FLOAT, //  配送费
@@ -67,7 +71,9 @@ module.exports = app => {
 	Shop.updateRate = function(data, id) {
 		return this.update(data, { where: { id } });
 	};
-
+	Shop.updateMonthSale = function(id, t) {
+		return app.model.query(`UPDATE shop set month_sale = month_sale + 1 where id = ${id}`, { transaction: t });
+	};
 	Shop.getDetail = function(id) {
 		return this.findOne({
 			where: {

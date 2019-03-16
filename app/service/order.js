@@ -226,7 +226,7 @@ class OrderService extends Service {
 		let orderStatusTime = '';
 		let successMsg = '';
 		// 判断商家是否已经接单
-		if (orderDetail.status === 'PAY') {
+		if (['UNPAY', 'PAY'].includes(orderDetail.status)) {
 			orderStatus = 'ORDER_CANCEL';
 			orderStatusTime = { cancel_time: nowTime };
 			successMsg = '成功取消订单';
@@ -237,9 +237,9 @@ class OrderService extends Service {
 			orderStatusTime = { apply_refund_time: nowTime };
 			successMsg = '成功申请取消订单';
 		}
-
+		console.log('orderStatusTime:', orderDetail.status);
+		let transaction = await app.model.transaction();
 		try {
-			let transaction = await app.model.transaction();
 			await app.model.OrderStatusTime.updateStatus(id, orderStatusTime, transaction);
 			await app.model.OrderList.changeOrderStatus(orderStatus, id, transaction);
 			await transaction.commit();

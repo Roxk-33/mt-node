@@ -12,12 +12,10 @@ module.exports = app => {
 				autoIncrement: true,
 			},
 			order_id: BIGINT,
-			created_at: DATE,
-			updated_at: DATE,
-			pay_time: DATE,
-			accept_time: DATE,
-			send_time: DATE,
-			complete_time: DATE,
+			pay_time: DATE, // 支付时间
+			accept_time: DATE, // 商家接单时间
+			send_time: DATE, // 配送时间
+			complete_time: DATE, // 完成订单时间
 			cancel_time: DATE,
 			predict_arrival_time: DATE,
 			deadline_pay_time: DATE,

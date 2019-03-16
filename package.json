@@ -15,6 +15,7 @@
     "egg-sequelize": "4.1.0",
     "egg-validate": "1.1.1",
     "jsonwebtoken": "8.3.0",
+    "moment": "^2.24.0",
     "mysql2": "1.6.2",
     "ngeohash": "^0.6.3",
     "stream-wormhole": "1.1.0",

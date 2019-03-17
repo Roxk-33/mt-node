@@ -21,8 +21,8 @@ module.exports = app => {
 
 	router.delete('/client/user/address/:id', verfiyToken, controller.user.delAddress);
 	// 评价
-	router.get('/client/user/evaluation/', verfiyToken, controller.user.getUserReviewList);
-	router.delete('/client/user/evaluation/:id', verfiyToken, controller.user.deleteEval);
+	router.get('/client/user/review/', verfiyToken, controller.user.getUserReviewList);
+	router.delete('/client/user/review/:id', verfiyToken, controller.user.deleteEval);
 
 	//店铺-列表
 	router.get('/client/shop', controller.shop.getList);

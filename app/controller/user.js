@@ -49,7 +49,7 @@ class UserController extends Controller {
 					required: true,
 				},
 			},
-			getShopReview: {
+			getUserReviewList: {
 				page: {
 					type: 'string',
 					required: true,

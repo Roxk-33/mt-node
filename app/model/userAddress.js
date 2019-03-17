@@ -12,56 +12,56 @@ module.exports = app => {
 				primaryKey: true,
 				unique: true,
 				allowNull: false,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			address: {
 				type: STRING,
-				allowNull: false
+				allowNull: false,
 			},
 			stress: {
 				type: STRING,
-				allowNull: false
+				allowNull: false,
 			},
 			user_id: {
 				type: UUID,
-				allowNull: false
+				allowNull: false,
 			},
 			is_default: {
 				type: INTEGER,
 				allowNull: true,
-				defaultValue: 0
+				defaultValue: 0,
 			},
 			tel: {
 				type: STRING,
-				allowNull: false
+				allowNull: false,
 			},
 			// 收货人姓名
 			user_name: {
 				type: STRING,
-				allowNull: false
+				allowNull: false,
 			},
 			// 0:男，1:女
 			user_sex: {
 				type: INTEGER,
 				allowNull: true,
-				defaultValue: 0
+				defaultValue: 0,
 			},
-			// 0:学校，1:公司，2:家
+			// 0:公司，1:学校，2:家
 			tag: {
 				type: STRING,
-				allowNull: true
-			}
+				allowNull: true,
+			},
 		},
 		{
 			timestamps: false,
-			tableName: 'user_address'
-		}
+			tableName: 'user_address',
+		},
 	);
 
 	userAddress.getList = function(id) {
 		return this.findAll({
 			where: { user_id: id },
-			attributes: { exclude: ['user_id'] }
+			attributes: { exclude: ['user_id'] },
 		});
 	};
 
@@ -73,7 +73,7 @@ module.exports = app => {
 			user_name: data.user_name,
 			user_id: data.user_id,
 			user_sex: data.user_sex,
-			tag: data.tag
+			tag: data.tag,
 		});
 	};
 	userAddress.updateItem = function(id, data) {
@@ -83,9 +83,9 @@ module.exports = app => {
 				tel: data.tel,
 				user_name: data.user_name,
 				user_sex: data.user_sex,
-				tag: data.tag
+				tag: data.tag,
 			},
-			{ where: { id } }
+			{ where: { id } },
 		);
 	};
 	userAddress.deleteItem = function(id) {

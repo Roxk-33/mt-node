@@ -13,5 +13,5 @@ run/
 *.un~
 fjpublish.config.js
 config/config.local.js
-app/public/userAvatar/*
+app/public/user/userAvatar/*
 app/service/fakeData.js

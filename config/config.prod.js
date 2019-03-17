@@ -49,7 +49,7 @@ module.exports = appInfo => {
 			},
 		},
 	};
-	config.uploadImgUrl = 'app/public/';
+	config.uploadImgUrl = 'app/public/user/';
 	config.absolutePath = 'https://static.lococo.site/user';
 
 	config.baiduMapAK = 'R1FAL3VEI6ORObBUZZf4kHOHhPeNzRZI';

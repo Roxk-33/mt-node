@@ -1,10 +1,6 @@
 'use strict';
 
 const Service = require('egg').Service;
-const path = require('path');
-const fs = require('fs');
-const awaitStreamReady = require('await-stream-ready').write;
-const sendToWormhole = require('stream-wormhole');
 class UserService extends Service {
 	async login(data) {
 		const { ctx, app, service } = this;
@@ -80,8 +76,8 @@ class UserService extends Service {
 	getUserReviewList(userId, page) {
 		return this.app.model.OrderReview.getUserReviewList(userId, page * 10);
 	}
-	// 获取评价列表
-	deleteEval(id) {
+	// 删除评价
+	deleteReview(id) {
 		return this.app.model.OrderReview.deleteItem(id);
 	}
 	// 获取验证码

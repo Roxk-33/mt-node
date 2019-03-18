@@ -7,14 +7,14 @@ class cartListController extends Controller {
 		return {
 			list: {},
 			listByShop: {
-				shopId: { type: 'string', required: true }
+				shopId: { type: 'string', required: true },
 			},
 			empty: {
-				shopId: { type: 'string', required: true }
+				shopId: { type: 'string', required: true },
 			},
 			deleteFood: {
-				id: { type: 'string', required: true }
-			}
+				id: { type: 'string', required: true },
+			},
 		};
 	}
 	async list() {
@@ -49,7 +49,7 @@ class cartListController extends Controller {
 	async create() {
 		const { ctx, service } = this;
 		const data = ctx.request.body;
-		const result = await service.cartList.createItem(data);
+		const result = await service.cartList.createItem(data, ctx.mt.id);
 		if (!!result) {
 			ctx.success(result);
 		} else {

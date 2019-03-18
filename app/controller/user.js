@@ -55,7 +55,7 @@ class UserController extends Controller {
 					required: true,
 				},
 			},
-			deleteEval: {
+			deleteReview: {
 				id: {
 					type: 'string',
 					required: true,
@@ -179,10 +179,10 @@ class UserController extends Controller {
 			ctx.fail();
 		}
 	}
-	async deleteEval() {
+	async deleteReview() {
 		const { ctx, service } = this;
-		const { id } = ctx.validateParams(this.rules.deleteEval, ctx);
-		const result = await service.user.deleteEval(id);
+		const { id } = ctx.validateParams(this.rules.deleteReview, ctx);
+		const result = await service.user.deleteReview(id);
 		if (!!result) ctx.success(result);
 		else {
 			ctx.fail();

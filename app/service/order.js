@@ -1,7 +1,6 @@
 'use strict';
 
 const Service = require('egg').Service;
-
 class OrderService extends Service {
 	// 计算总价
 	async calTotalPrice(userId, shopId, cartIdArr) {
@@ -18,6 +17,7 @@ class OrderService extends Service {
 			const item = cartList[i];
 
 			// 未选中该商品
+			// cartIdArr为空则表示选购全部
 			if (cartIdArr.length && cartIdArr.indexOf(item.id) === -1) continue;
 
 			// 折扣商品
@@ -29,15 +29,16 @@ class OrderService extends Service {
 
 			item.food_name = item.food_info.food_name;
 			item.picture = item.food_info.picture;
-			item.spec_text = [];
+			item.specText = [];
 			// 规格产品,需要加上规格价格
 			if (item.spec_arr.length) {
-				item.spec_text = [];
 				item.price = item.spec_arr.reduce((price, current) => {
 					const specArr = item.food_info.spec_arr;
 					const index = specArr.findIndex(specItem => current == specItem.id);
 					price += specArr[index].price;
-					item.spec_text.push(specArr[index].label);
+					let label = specArr[index].label;
+					item.specText.push(label);
+					console.log(item.specText, specArr[index], specArr[index].label);
 					return price;
 				}, item.food_info.price);
 			}
@@ -94,17 +95,17 @@ class OrderService extends Service {
 			const len = cartList.length;
 			for (let index = 0; index < len; index++) {
 				const cartFoodInfo = cartList[index];
-				const { status, stock } = await service.shop.detectStock(cartFoodInfo);
-				// 无库存
-				if (!status) {
-					throw cartFoodInfo;
-				}
+				// const { status, stock } = await service.shop.detectStock(cartFoodInfo);
+				// // 无库存
+				// if (!status) {
+				// 	throw cartFoodInfo;
+				// }
 				await app.model.OrderItem.createOrderFood(
 					{
 						user_id: userId,
 						order_id: orderInfo.id,
 						food_id: cartFoodInfo.food_id,
-						spec_text: cartFoodInfo.spec_text,
+						spec_text: cartFoodInfo.specText,
 						price: cartFoodInfo.price,
 						num: cartFoodInfo.num,
 						food_picture: cartFoodInfo.picture,
@@ -115,16 +116,16 @@ class OrderService extends Service {
 
 				// 删除购物车中已买商品
 				await app.model.CartList.deleteItem({ id: cartFoodInfo.id }, transaction);
-				// 规格类产品库存放在规格表
-				if (cartFoodInfo.spec_arr.length) {
-					for (let index = 0; index < cartFoodInfo.spec_arr.length; index++) {
-						const specId = cartFoodInfo.spec_arr[index];
-						await app.model.FoodSpec.updateStock(specId, stock[index], transaction);
-					}
-				} else {
-					// 更新库存
-					await app.model.Food.updateStock(cartFoodInfo.food_id, stock, transaction);
-				}
+				// // 规格类产品库存放在规格表
+				// if (cartFoodInfo.spec_arr.length) {
+				// 	for (let index = 0; index < cartFoodInfo.spec_arr.length; index++) {
+				// 		const specId = cartFoodInfo.spec_arr[index];
+				// 		await app.model.FoodSpec.updateStock(specId, stock[index], transaction);
+				// 	}
+				// } else {
+				// 	// 更新库存
+				// 	await app.model.Food.updateStock(cartFoodInfo.food_id, stock, transaction);
+				// }
 				if (index === len - 1) {
 					await transaction.commit();
 				}
@@ -163,8 +164,11 @@ class OrderService extends Service {
 		if (type === 'all') {
 			return this.app.model.OrderList.getList(condition, page * 10);
 		}
-		if (type === 'eval') {
+		if (type === 'review') {
 			return this.app.model.OrderList.getList({ ...condition, review_status: 0, status: 'ORDER_SUCCESS' }, page * 10);
+		}
+		if (type === 'refund') {
+			return this.app.model.RefundList.getList(condition, page * 10);
 		}
 	}
 

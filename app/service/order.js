@@ -168,7 +168,7 @@ class OrderService extends Service {
 			return this.app.model.OrderList.getList({ ...condition, review_status: 0, status: 'ORDER_SUCCESS' }, page * 10);
 		}
 		if (type === 'refund') {
-			return this.app.model.RefundList.getList(condition, page * 10);
+			return this.app.model.OrderList.geRefundList(userId, page * 10);
 		}
 	}
 

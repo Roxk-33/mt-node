@@ -2,7 +2,7 @@
 
 module.exports = app => {
 	const { STRING, INTEGER, FLOAT, TEXT, BIGINT, UUID } = app.Sequelize;
-
+	const Op = app.Sequelize.Op;
 	const orderList = app.model.define(
 		'orderList',
 		{
@@ -77,6 +77,37 @@ module.exports = app => {
 	orderList.getList = function(condition, offset) {
 		return this.findAll({
 			where: condition,
+			offset,
+			limit: 10,
+			order: [
+				// 将转义标题，并根据有效的方向参数列表验证DESC
+				['created_at', 'DESC'],
+			],
+			include: [
+				{
+					model: app.model.Shop,
+					as: 'shop_info',
+					attributes: ['photo', 'shop_title', 'id'],
+				},
+				{
+					model: app.model.OrderItem,
+					as: 'food_list',
+				},
+				{
+					model: app.model.OrderStatusTime,
+					as: 'order_status',
+				},
+			],
+		});
+	};
+	orderList.geRefundList = function(userId, offset) {
+		return this.findAll({
+			where: {
+				user_id: userId,
+				status: {
+					[Op.or]: ['ORDER_REFUNDING', 'ORDER_REFUND', 'ORDER_REFUND_FAIL_ONTHEWAY'],
+				},
+			},
 			offset,
 			limit: 10,
 			order: [

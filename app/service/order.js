@@ -116,6 +116,7 @@ class OrderService extends Service {
 
 				// 删除购物车中已买商品
 				await app.model.CartList.deleteItem({ id: cartFoodInfo.id }, transaction);
+				// NOTE: 暂时屏蔽库存模块
 				// // 规格类产品库存放在规格表
 				// if (cartFoodInfo.spec_arr.length) {
 				// 	for (let index = 0; index < cartFoodInfo.spec_arr.length; index++) {

@@ -63,7 +63,7 @@ module.exports = app => {
 				{
 					model: app.model.Shop,
 					as: 'shop_info',
-					attributes: ['id', 'shop_title', 'photo', 'freight', 'threshold'],
+					attributes: ['id', 'shop_title', 'freight', 'threshold'],
 				},
 				{
 					model: app.model.Food,

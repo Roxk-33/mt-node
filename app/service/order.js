@@ -38,12 +38,11 @@ class OrderService extends Service {
 					price += specArr[index].price;
 					let label = specArr[index].label;
 					item.specText.push(label);
-					console.log(item.specText, specArr[index], specArr[index].label);
 					return price;
 				}, item.food_info.price);
 			}
 			cartListBuy.push(item);
-			totalPrice += item.price;
+			totalPrice += item.price * item.num;
 		}
 		return { totalPrice, shopInfo, cartList: cartListBuy };
 	}
@@ -256,6 +255,7 @@ class OrderService extends Service {
 		}
 	}
 	async setSchedules(id, timeEnd) {
+		console.log(timeEnd);
 		const { app } = this;
 		await app.redis.get('cancel_order').set(id, 1);
 		const expireTime = app.getResidualTime(timeEnd);

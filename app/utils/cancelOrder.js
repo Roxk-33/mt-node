@@ -9,7 +9,8 @@ class cancelOrder {
 	}
 	async cancel(id, app) {
 		let orderStatus = 'ORDER_CANCEL_TIMEOUT';
-		const { status } = await app.model.OrderList.getDetail(id);
+		const { status } = await app.model.OrderList.getDetail({ id });
+		console.log(status);
 		if (status === 'UNPAY') {
 			try {
 				const nowTime = new Date();

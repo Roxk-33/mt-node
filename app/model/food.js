@@ -15,17 +15,18 @@ module.exports = app => {
 			price: FLOAT,
 			description: TEXT,
 			is_mulit: INTEGER,
+			is_delete: INTEGER, // 软性删除
 			picture: {
 				type: STRING,
-				defaultValue: 'https://via.placeholder.com/100x100'
+				defaultValue: 'https://via.placeholder.com/100x100',
 			}, //  照片
 			month_sale: { type: DOUBLE, allowNull: false, defaultValue: 0 },
-			like: { type: FLOAT, allowNull: false, defaultValue: 0 } //  点赞
+			like: { type: FLOAT, allowNull: false, defaultValue: 0 }, //  点赞
 		},
 		{
 			timestamps: false,
-			freezeTableName: true
-		}
+			freezeTableName: true,
+		},
 	);
 	Food.associate = function() {
 		this.belongsTo(app.model.Shop, { foreignKey: 'shop_id', targetKey: 'id' });
@@ -33,7 +34,7 @@ module.exports = app => {
 		this.hasMany(app.model.FoodSpec, {
 			foreignKey: 'food_id',
 			sourceKey: 'id',
-			as: 'spec_arr'
+			as: 'spec_arr',
 		});
 	};
 
@@ -46,9 +47,9 @@ module.exports = app => {
 			include: [
 				{
 					model: app.model.FoodSpec,
-					as: 'spec_arr'
-				}
-			]
+					as: 'spec_arr',
+				},
+			],
 		});
 	};
 	return Food;

@@ -69,7 +69,7 @@ module.exports = app => {
 					model: app.model.Food,
 					as: 'food_info',
 					attributes: ['id', 'food_name', 'picture', 'price'],
-
+					where: { is_delete: 0 },
 					include: [
 						{
 							model: app.model.FoodSpec,

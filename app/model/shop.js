@@ -85,6 +85,7 @@ module.exports = app => {
 					as: 'food_list',
 					where: {
 						shop_id: id,
+						is_delete: 0,
 					},
 					include: [
 						{

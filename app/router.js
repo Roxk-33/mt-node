@@ -32,7 +32,7 @@ module.exports = app => {
 	router.get('/client/shop/:id', controller.shop.getItem);
 
 	// 获取购物车
-	router.get('/client/user/cart', verfiyToken, controller.cartList.list);
+	router.get('/client/user/cart', verfiyToken, controller.cartList.getCartList);
 
 	// 修改购物车内的商品
 	router.put('/client/user/cart', verfiyToken, controller.cartList.updateItem);

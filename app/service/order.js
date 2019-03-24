@@ -134,13 +134,13 @@ class OrderService extends Service {
 			this.setSchedules(orderInfo.id, dead_line_time);
 
 			// 存储orderID
-			let orderIdStr = await app.redis.get('shop_order').get(shopId);
+			let orderIdStr = await app.redis.get('shop_order').get('orders:' + shopId);
 			if (!orderIdStr) {
 				orderIdStr = orderInfo.id;
 			} else {
 				orderIdStr += ',' + orderInfo.id;
 			}
-			await app.redis.get('shop_order').set(shopId, orderIdStr);
+			await app.redis.get('shop_order').set('orders:' + shopId, orderIdStr);
 
 			return { status: true, data: orderInfo };
 		} catch (e) {
@@ -255,11 +255,10 @@ class OrderService extends Service {
 		}
 	}
 	async setSchedules(id, timeEnd) {
-		console.log(timeEnd);
 		const { app } = this;
-		await app.redis.get('cancel_order').set(id, 1);
+		await app.redis.get('cancel_order').set('cancel_order:' + id, 1);
 		const expireTime = app.getResidualTime(timeEnd);
-		await app.redis.get('cancel_order').expire(id, expireTime);
+		await app.redis.get('cancel_order').expire('cancel_order:' + id, expireTime);
 	}
 	// 评价商品
 	async reviewOrder(data, user_id, order_id) {

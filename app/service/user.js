@@ -3,17 +3,17 @@
 const Service = require('egg').Service;
 class UserService extends Service {
 	async login(data) {
-		const { ctx, app, service } = this;
+		const { ctx, app } = this;
 		let { password, account } = data;
 		let result = false;
-
+		const expireTime = app.config.jwt.time;
 		const user = await app.model.User.getItemByAccount(account);
 		if (!!user) {
 			result = ctx.helper.bcompare(password, user.dataValues.password);
 			if (result) {
 				let token = app.generateToken({ id: user.id });
-				// await app.redis.get('user').set(user.id, token);
-				// await app.redis.get('user').expire(user.id, expireTime);
+				await app.redis.get('user').set('userId:' + user.id, token);
+				await app.redis.get('user').expire('userId:' + user.id, expireTime);
 
 				delete user.password;
 				return { token, user };
@@ -54,7 +54,7 @@ class UserService extends Service {
 			sql = { user_name: userName };
 		}
 		if (action === 'changeTel') {
-			let verCode = await app.redis.get('user').get(id);
+			let verCode = await app.redis.get('user').get('userId:' + id);
 			if (verCode !== code) {
 				return { status: false, msg: '验证码错误' };
 			}
@@ -92,8 +92,8 @@ class UserService extends Service {
 		// const code = Math.floor(Math.random() * 8999 + 1000) + 1;
 		if (!isExist) {
 			// 生成验证码
-			await userRedis.set(userId, code);
-			await userRedis.expire(userId, expireTime);
+			await userRedis.set('userCode:' + userId, code);
+			await userRedis.expire('userCode:' + userId, expireTime);
 			return { status: true, msg: '验证码已发送', data: code };
 		}
 		return { status: false, msg: '已存在该手机号' };

@@ -17,7 +17,7 @@ class cartListController extends Controller {
 			},
 		};
 	}
-	async list() {
+	async getCartList() {
 		const { ctx, service } = this;
 		const result = await service.cartList.getCartList(ctx.mt.id);
 		if (!!result) {

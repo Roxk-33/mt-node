@@ -134,13 +134,13 @@ class OrderService extends Service {
 			this.setSchedules(orderInfo.id, dead_line_time);
 
 			// 存储orderID
-			let orderIdStr = await app.redis.get('shop_order').get('orders:' + shopId);
+			let orderIdStr = await app.redis.get('shop_order').get(shopId);
 			if (!orderIdStr) {
 				orderIdStr = orderInfo.id;
 			} else {
 				orderIdStr += ',' + orderInfo.id;
 			}
-			await app.redis.get('shop_order').set('orders:' + shopId, orderIdStr);
+			await app.redis.get('shop_order').set(shopId, orderIdStr);
 
 			return { status: true, data: orderInfo };
 		} catch (e) {

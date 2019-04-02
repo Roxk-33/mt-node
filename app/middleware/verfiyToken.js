@@ -15,7 +15,6 @@ module.exports = (opt, app) => {
 			let { id } = result;
 			if (id) {
 				let redis_token = await app.redis.get('user').get('userId:' + id);
-				console.log('111:' + redis_token);
 				if (redis_token === token) {
 					if (id) {
 						ctx.mt = {};

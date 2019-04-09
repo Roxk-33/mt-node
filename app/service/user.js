@@ -24,7 +24,7 @@ class UserService extends Service {
 						user_name: user.user_name,
 					},
 				);
-				return { token, _user };
+				return { token, user: _user };
 			}
 		}
 

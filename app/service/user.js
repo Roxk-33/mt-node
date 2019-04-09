@@ -14,9 +14,17 @@ class UserService extends Service {
 				let token = app.generateToken({ id: user.id });
 				await app.redis.get('user').set('userId:' + user.id, token);
 				await app.redis.get('user').expire('userId:' + user.id, expireTime);
-
-				delete user.password;
-				return { token, user };
+				let _user = Object.assign(
+					{},
+					{
+						account: user.account,
+						avatar: user.avatar,
+						id: user.id,
+						tel: user.tel,
+						user_name: user.user_name,
+					},
+				);
+				return { token, _user };
 			}
 		}
 

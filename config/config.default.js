@@ -42,7 +42,8 @@ module.exports = appInfo => {
 	config.slat = 2;
 
 	config.pay = {
-		deadline: 15 * 60, // 支付时间
+		// deadline: 15 * 60, // 支付时间
+		deadline: 30, // 支付时间
 	};
 	config.cancelTick = '1h';
 	config.verCodeTime = 60 * 5; // 短信验证码有效时间

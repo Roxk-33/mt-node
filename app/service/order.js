@@ -214,7 +214,7 @@ class OrderService extends Service {
 		}
 	}
 	// 取消订单
-	async cancelOrder(id, userId) {
+	async cancelOrder(id, isTimeOut, userId) {
 		const { app } = this;
 		const nowTime = new Date();
 		// 订单只有在『已支付』状态才能取消
@@ -232,6 +232,7 @@ class OrderService extends Service {
 		// 判断商家是否已经接单
 		if (['UNPAY', 'PAY'].includes(orderDetail.status)) {
 			orderStatus = 'ORDER_CANCEL';
+			if (isTimeOut == 1) orderStatus = 'ORDER_CANCEL_TIMEOUT';
 			orderStatusTime = { cancel_time: nowTime };
 			successMsg = '成功取消订单';
 		}

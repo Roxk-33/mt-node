@@ -6,33 +6,33 @@ class OrderController extends Controller {
 	get rules() {
 		return {
 			create: {
-				shopId: { type: 'number', required: true }
+				shopId: { type: 'number', required: true },
 			},
 			pay: {
-				id: { type: 'number', required: true }
+				id: { type: 'number', required: true },
 			},
 			payInfo: {
-				id: { type: 'string', required: true }
+				id: { type: 'string', required: true },
 			},
 			list: {
 				page: { type: 'string', required: true },
-				type: { type: 'string', required: true }
+				type: { type: 'string', required: true },
 			},
 			detail: {
-				id: { type: 'string', required: true }
+				id: { type: 'string', required: true },
 			},
 			cancel: {
-				id: { type: 'string', required: true }
+				id: { type: 'string', required: true },
 			},
 			review: {},
 			confirmOrder: {
-				shopId: { type: 'number', required: true }
+				shopId: { type: 'number', required: true },
 			},
 			refund: {
 				orderId: { type: 'number', required: true },
 				shopId: { type: 'number', required: true },
-				reason: { type: 'string', required: true }
-			}
+				reason: { type: 'string', required: true },
+			},
 		};
 	}
 	async create() {
@@ -82,8 +82,8 @@ class OrderController extends Controller {
 	}
 	async cancel() {
 		const { ctx, service } = this;
-		const { id } = ctx.validateParams(this.rules.cancel, ctx);
-		const { status, msg } = await service.order.cancelOrder(id,ctx.mt.id);
+		const { id, isTimeOut } = ctx.validateParams(this.rules.cancel, ctx);
+		const { status, msg } = await service.order.cancelOrder(id, isTimeOut, ctx.mt.id);
 		if (status) ctx.success(msg);
 		else {
 			ctx.fail(msg);
@@ -111,7 +111,6 @@ class OrderController extends Controller {
 		}
 	}
 	// 申请退款
-	// TODO:未完成：缺乏设计稿
 	async applyRefund() {
 		const { ctx, service } = this;
 		const data = ctx.validateBody(this.rules.refund, ctx);
